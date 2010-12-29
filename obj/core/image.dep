@@ -1,0 +1,2 @@
+obj/core/image.o obj/core/image.dep : src/core/image.cpp src/stdafx.h src/core/image.h src/core/defs.h \
+ src/core/algebra.h src/core/memory.h

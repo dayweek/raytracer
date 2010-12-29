@@ -1,0 +1,40 @@
+CC=/usr/local/lang/gcc-4.3.2/bin/g++
+EXECUTABLE=minirt
+SRC_DIR=src
+INTERM_DIR=obj
+
+INCLUDES=-I $(SRC_DIR)
+LIBS=-lpng -stdc++ -Wl,-rpath /usr/local/lang/gcc-4.3.2/lib64/
+CFLAGS_COMMON=$(INCLUDES)
+CFLAGS=$(CFLAGS_COMMON) -O3 -DNDEBUG 
+#CFLAGS=$(CFLAGS_COMMON) -g -O0 -D_DEBUG 
+
+SOURCE_FILES=$(shell find $(SRC_DIR) -iname '*.cpp')
+DEP_FILES=$(SOURCE_FILES:$(SRC_DIR)/%.cpp=./$(INTERM_DIR)/%.dep)
+OBJ_FILES=$(SOURCE_FILES:$(SRC_DIR)/%.cpp=./$(INTERM_DIR)/%.o)
+
+all: $(EXECUTABLE)
+
+clean:
+	rm -rf obj $(EXECUTABLE)
+
+.PHONY: clean all
+
+.SUFFIXES:
+.SUFFIXES:.o .dep .cpp .h
+
+$(INTERM_DIR)/%.dep: $(SRC_DIR)/%.cpp
+	mkdir -p `dirname $@`
+	echo -n `dirname $@`/ > $@
+	$(CC) $(CFLAGS_COMMON) $< -MM | sed -r -e 's,^(.*)\.o\s*\:,\1.o $@ :,g' >> $@
+
+ifneq ($(MAKECMDGOALS),clean)
+-include $(DEP_FILES)
+endif
+
+$(INTERM_DIR)/%.o: $(SRC_DIR)/%.cpp
+	mkdir -p $(INTERM_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(EXECUTABLE): $(OBJ_FILES)
+	$(CC) $^ $(LIBS) -o $@

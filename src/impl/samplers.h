@@ -1,0 +1,80 @@
+#ifndef __INCLUDE_GUARD_EA5235C2_ADC9_40B5_9859_473C44497D3A
+#define __INCLUDE_GUARD_EA5235C2_ADC9_40B5_9859_473C44497D3A
+#ifdef _MSC_VER
+	#pragma once
+#endif
+
+
+#include "../rt/renderer.h"
+
+//The default sampler which samples a pixel with a ray through it's center
+struct DefaultSampler : public Sampler
+{
+	virtual void getSamples(uint _x, uint _y, std::vector<Sample> &_result)
+	{
+		Sample s;
+		s.position = float2(0.5f, 0.5f);
+		s.weight = 1.f;
+		_result.push_back(s);
+	}
+
+};
+
+struct RegularSampler : public Sampler
+{
+	int m;
+	virtual void getSamples(uint _x, uint _y, std::vector<Sample> &_result)
+	{
+		float weight = 1.0/(m*m);
+		float step = 1.0/m;
+		float start = step / 2;
+		for(int x = 0; x < m; x++)
+			for(int y = 0; y < m; y++) {
+				Sample s;
+				s.position = float2(start + step*x, start + step*y);
+				s.weight = weight;
+				_result.push_back(s);
+			}
+	}
+
+};
+struct RandomSampler : public Sampler
+{
+	int n;
+	virtual void getSamples(uint _x, uint _y, std::vector<Sample> &_result)
+	{
+		srand ( time(NULL) );
+
+		float weight = 1.0/(n);
+		for(int i = 0; i < n; i++) {
+			Sample s;
+			s.position = float2(((float)rand())/RAND_MAX, ((float)rand()) / RAND_MAX);
+			s.weight = weight;
+			_result.push_back(s);
+	  	}
+	  
+	}
+
+};
+
+struct StratifiedSampler : public Sampler
+{
+	int m;
+	virtual void getSamples(uint _x, uint _y, std::vector<Sample> &_result)
+	{
+		srand ( time(NULL) );
+		float weight = 1.0/(m*m);
+		float step = 1.0/m;
+		for(int x = 0; x < m; x++)
+			for(int y = 0; y < m; y++) {
+				Sample s;
+				s.position = float2(step*x + step*(float)rand()/RAND_MAX,step*y + step*(float)rand()/RAND_MAX);
+				s.weight = weight;
+				_result.push_back(s);
+			}
+	}
+
+};
+//TODO: Implement Regular, Random, and Stratified samplers.
+
+#endif //__INCLUDE_GUARD_EA5235C2_ADC9_40B5_9859_473C44497D3A
