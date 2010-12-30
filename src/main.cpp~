@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 	//try
 	{
 		assigment4_1_and_2();
-		//assigment4_ex3();
+		assigment4_ex3();
 	}
 	/*catch (const std::exception &_ex)
 	{

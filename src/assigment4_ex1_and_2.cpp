@@ -58,7 +58,7 @@ public:
 
 void assigment4_1_and_2()
 {
-	Image img(800, 600);
+	Image img(200, 150);
 	img.addRef();
 
 	//Set up the scene
@@ -116,9 +116,9 @@ void assigment4_1_and_2()
 	r.target = &img;
 	r.sampler = &samp;
 
-	r.camera = &cam1;
-	r.render();
-	img.writePNG("result_cam1.png");
+// 	r.camera = &cam1;
+// 	r.render();
+// 	img.writePNG("result_cam1.png");
 
 	//For seeing the difference in texture filtering
 	r.camera = &cam2;
