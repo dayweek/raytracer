@@ -171,7 +171,6 @@ namespace objLoaderUtil
 
 				SmartPtr<Image> img = new Image;
 				img->readPNG(pngFileName);
-			
 				SmartPtr<Texture> tex = new Texture;
 				tex->image = img;
 
@@ -421,10 +420,14 @@ parse_err_found:
 
 	if(_createDefautShaders)
 	{
+		
 		for(t_materialVector::iterator it = materials.begin(); it != materials.end(); it++)
 		{
-			SmartPtr<TexturedPhongShader> shader = new TexturedPhongShader;
+			SmartPtr<BumpTexturePhongShader> shader = new BumpTexturePhongShader;
 			it->shader = shader;
+			if((it->bumpTexture).data() != NULL) {
+				shader->bumpTexture = it->bumpTexture;
+			}
 			shader->diffuseCoef = it->diffuseCoeff;
 			shader->ambientCoef = it->ambientCoeff;
 			shader->specularCoef = it->specularCoeff;

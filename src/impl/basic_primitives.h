@@ -8,6 +8,7 @@
 #include "core/util.h"
 #include "rt/basic_definitions.h"
 #include "../rt/shading_basics.h"
+#include "phong_shaders.h"
 
 
 struct BasicPrimitiveHitPoint : public RefCntBase

@@ -47,6 +47,8 @@ struct PluggableShader : public Shader
 	
 	//Sets the texture coordinates for the intersection
 	virtual void setTextureCoord(const float2& _texCoord) {};
+	
+	virtual void setPuPv(Point x, Point y, Point z, float2 u, float2 v, float2 w) {};
 };
 
 //A helper macro to implement default cloning 

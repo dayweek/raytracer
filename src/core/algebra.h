@@ -321,6 +321,54 @@ struct Vector
 	}
 };
 
+// Matrix 
+/*
+struct Matrix
+{
+	typedef Vector t_this;
+	typedef float t_scalar;
+
+	//Constructors: default and Vector(x, y, z)
+	//Can also access the Vector using the [] operator
+	_DEF_CONSTR_AND_ACCESSORS3(Vector);
+
+	_DEF_BIN_OP3(+, Vector); //Vector + Vector -> Vector and Vector += Vector
+	_DEF_BIN_OP3(-, Vector); //Vector - Vector -> Vector and Vector -= Vector
+
+	
+	_DEF_SCALAR_OP3(*, float); //Vector * scalar -> Vector and Vector *= scalar
+	_DEF_SCALAR_OP3_SYM(*, float); //scalar * Vector -> Vector
+	_DEF_SCALAR_OP3(/, float); //Vector / scalar and Vector /= scalar
+
+	//Unary minus
+	_DEF_UNARY_MINUS3;
+
+	//Dot product
+	float operator* (const Vector& _v) const
+	{
+		return x * _v.x + y * _v.y + z * _v.z;
+	}
+
+	//Cross product
+	const Vector operator %(const Vector& _v) const
+	{
+		float4 t = float4(*this).cross(float4(_v));
+		return Vector(t.x, t.y, t.z);
+	}
+
+	//Length of the vector
+	const float len() const
+	{
+		return sqrtf(*this * *this);
+	}
+
+	//A normalized vector: V / |V|
+	const Vector operator ~() const
+	{
+		return *this / len();
+	}
+};*/
+
 //A class representing a 3D point in space
 struct Point
 {

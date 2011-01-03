@@ -5,6 +5,7 @@
 #endif
 
 #include "../rt/shading_basics.h"
+#include "../rt/texture.h"
 
 struct DefaultAmbientShader : public PluggableShader
 {
@@ -82,6 +83,7 @@ public:
 	SmartPtr<Texture> diffTexture;
 	SmartPtr<Texture> amibientTexture;
 	SmartPtr<Texture> specTexture;
+	
 
 	virtual void setTextureCoord(const float2& _texCoord) { m_texCoord = _texCoord;}
 
@@ -98,16 +100,58 @@ public:
 	virtual void getCoeff(float4 &_diffuseCoef, float4 &_specularCoef, float &_specularExponent) const
 	{
 		DefaultPhongShader::getCoeff(_diffuseCoef, _specularCoef, _specularExponent);
-
+/*
 		if(diffTexture.data() != NULL)
 			_diffuseCoef = diffTexture->sample(m_texCoord);
 
 		if(specTexture.data() != NULL)
-			_specularCoef = specTexture->sample(m_texCoord);
+			_specularCoef = specTexture->sample(m_texCoord);*/
 	}
 
 	
 	_IMPLEMENT_CLONE(TexturedPhongShader);
+};
+
+
+
+class BumpTexturePhongShader : public TexturedPhongShader
+{
+public:
+	SmartPtr<Texture> bumpTexture;
+	Vector pu, pv;
+	virtual Vector getNormal() const 
+	{ 
+		Vector ret = m_normal;
+		if(bumpTexture.data() != NULL) 
+		{
+			// we modify the normal with respect to the bumpTexture
+			
+// 			std::cout << 1 << " " <<  m_texCoord.x << " " << m_texCoord.y << std::endl;
+			Vector a = pu % m_normal;
+			Vector b = pv % m_normal;
+			
+			float2 der = bumpTexture->derivatives(m_texCoord);
+			return ~(m_normal + (der.x * a - der.y * b));
+		}
+		return ret;
+	}
+	virtual void setPuPv(Point x, Point y, Point z, float2 u, float2 v, float2 w)
+	{ 
+		pu = Vector(1,0,0);
+		pu = Vector(0,1,0);
+	}
+/*	virtual float4 getAmbientCoefficient() const 
+	{ 
+		float4 ret = DefaultPhongShader::getAmbientCoefficient();
+
+		if(bumpTexture.data() != NULL) {
+// 			std::cout << "ok" << std::endl;
+			ret = bumpTexture->sample(m_texCoord);
+		}
+
+		return ret;
+	}*/		
+	_IMPLEMENT_CLONE(BumpTexturePhongShader);
 };
 
 #endif //__INCLUDE_GUARD_810F2AF5_7E81_4F1E_AA05_992B6D2C0016

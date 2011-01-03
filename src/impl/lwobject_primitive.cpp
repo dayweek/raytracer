@@ -23,6 +23,9 @@ SmartPtr<Shader> LWObject::Face::getShader(IntRet _intData) const
 	shader->setNormal(norm);
 	float2 texPos = bary[0]*m_lwObject->texCoords[tex1] + bary[1]*m_lwObject->texCoords[tex2] + bary[2]*m_lwObject->texCoords[tex3];
 	shader->setTextureCoord(texPos);
+	//set pu, pv for bump mapping
+	shader->setPuPv(m_lwObject->vertices[vert1], m_lwObject->vertices[vert2],m_lwObject->vertices[vert3],
+			m_lwObject->texCoords[tex1], m_lwObject->texCoords[tex2], m_lwObject->texCoords[tex3]);
 
 	return shader;
 }

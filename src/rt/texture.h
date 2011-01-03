@@ -107,6 +107,21 @@ public:
 		else
 			return float4::rep(0.f);
 	}
+	float2 derivatives(const float2& _pos) const
+	{
+		// bilinear transformation
+		//std::cout << _pos.x << std::endl;
+		float2 pos = _pos * float2((float)image->width(), (float)image->height())
+			+ float2(_TEXEL_CENTER_OFFS, _TEXEL_CENTER_OFFS);
+		float4 c0 = ((*image)(maybewrapx((uint)pos.x), maybewrapy((uint)pos.y)));
+		float4 c1 = ((*image)(maybewrapx((uint)(pos.x + 1.0)), maybewrapy((uint)pos.y)));
+		if(((uint)pos.x) == ((uint)(pos.x + 1.0))) 
+			std::cout << "NE" << std::endl;
+		float4 c2 = ((*image)(maybewrapx((uint)pos.x), maybewrapy((uint)(pos.y + 1.0))));
+		float4 c3 = ((*image)(maybewrapx((uint)(pos.x + 1.0)), maybewrapy((uint)(pos.y + 1.0))));
+ 		//std::cout << c0[2] << std::endl;
+		return float2(c2[0] - c0[0], c1[0] - c3[0]);
+	}
 };
 
 

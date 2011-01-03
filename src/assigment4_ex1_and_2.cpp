@@ -56,9 +56,11 @@ public:
 };
 
 
+
+
 void assigment4_1_and_2()
 {
-	Image img(200, 150);
+	Image img(800, 600);
 	img.addRef();
 
 	//Set up the scene
@@ -66,6 +68,24 @@ void assigment4_1_and_2()
 	LWObject cow;
 	cow.read("models/cow.obj", true);
 	cow.addReferencesToScene(scene.primitives);
+	
+	// my phong
+	BumpTexturePhongShader sh;
+	sh.diffuseCoef = float4(0.2f, 0.2f, 0, 0);
+	sh.ambientCoef = sh.diffuseCoef;
+	sh.specularCoef = float4::rep(0.8f);
+	Image bump;
+	bump.addRef();
+
+	bump.readPNG("models/noise.png");
+	Texture t;
+	t.addRef();
+	t.image = &bump;
+	sh.bumpTexture = &t;
+	sh.specularExponent = 10000.f;
+	sh.addRef();
+	InfinitePlane triangle(Point(0,0,0), Vector(0,0,1), &sh);;
+	scene.primitives.push_back(&triangle);
 	scene.rebuildIndex();
 
 	BumpMirrorPhongShader sh4;
@@ -79,8 +99,9 @@ void assigment4_1_and_2()
 	cow.materials[cow.materialMap["Floor"]].shader = &sh4;
 	
  	//Enable bi-linear filtering on the walls
-	((TexturedPhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->diffTexture->filterMode = Texture::TFM_Point;
- 	((TexturedPhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->amibientTexture->filterMode = Texture::TFM_Point;
+	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->diffTexture->filterMode = Texture::TFM_Point;
+ 	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->amibientTexture->filterMode = Texture::TFM_Point;
+	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->bumpTexture->filterMode = Texture::TFM_Point;
 
 
 	//Set up the cameras
@@ -102,7 +123,7 @@ void assigment4_1_and_2()
 	pls.falloff = float4(0, 0, 1, 0);
 
 	pls.intensity  = float4::rep(0.9f);
-	pls.position = Point(-2.473637f, 3.119330f, 9.571486f);
+	pls.position = Point(-2.473637f, 3.119330f,4.571486f);
 	integrator.lightSources.push_back(pls);
 
 	integrator.ambientLight = float4::rep(0.1f);
@@ -116,13 +137,13 @@ void assigment4_1_and_2()
 	r.target = &img;
 	r.sampler = &samp;
 
-// 	r.camera = &cam1;
-// 	r.render();
-// 	img.writePNG("result_cam1.png");
+	r.camera = &cam1;
+	r.render();
+	img.writePNG("result_cam1.png");
 
 	//For seeing the difference in texture filtering
-	r.camera = &cam2;
-	r.render();
-	img.writePNG("result_cam2.png");
+// 	r.camera = &cam2;
+// 	r.render();
+// 	img.writePNG("result_cam2.png");
 }
 
