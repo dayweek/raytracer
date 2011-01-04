@@ -322,52 +322,71 @@ struct Vector
 };
 
 // Matrix 
-/*
+
 struct Matrix
 {
-	typedef Vector t_this;
-	typedef float t_scalar;
+	Vector v[3];
 
-	//Constructors: default and Vector(x, y, z)
-	//Can also access the Vector using the [] operator
-	_DEF_CONSTR_AND_ACCESSORS3(Vector);
-
-	_DEF_BIN_OP3(+, Vector); //Vector + Vector -> Vector and Vector += Vector
-	_DEF_BIN_OP3(-, Vector); //Vector - Vector -> Vector and Vector -= Vector
-
+	Matrix(const Vector *a)
+	{
+		v[0] = a[0];
+		v[1] = a[1];
+		v[2] = a[2];
+	}
 	
-	_DEF_SCALAR_OP3(*, float); //Vector * scalar -> Vector and Vector *= scalar
-	_DEF_SCALAR_OP3_SYM(*, float); //scalar * Vector -> Vector
-	_DEF_SCALAR_OP3(/, float); //Vector / scalar and Vector /= scalar
-
-	//Unary minus
-	_DEF_UNARY_MINUS3;
-
-	//Dot product
-	float operator* (const Vector& _v) const
+	Matrix operator* (const float& n) const
 	{
-		return x * _v.x + y * _v.y + z * _v.z;
+		Vector t[3];
+		for(int i = 0; i < 3; i++)
+			t[i] = n*v[i];
+		return Matrix(t);
 	}
 
-	//Cross product
-	const Vector operator %(const Vector& _v) const
+	Matrix operator* (const Matrix& m) const
 	{
-		float4 t = float4(*this).cross(float4(_v));
-		return Vector(t.x, t.y, t.z);
+		Vector ret[3];
+		Matrix mt(v);
+		mt = mt.trans();
+		for(int i = 0; i < 3; i++)
+			for(int ii = 0; ii < 3; ii++)
+				ret[ii][i] = mt.v[i] * m.v[ii];
+		return Matrix(ret);
+	}
+	
+	Matrix trans()
+	{
+		Vector t[3];
+		for(int i = 0; i < 3; i++)
+			for(int ii = 0; ii < 3; ii++)
+				t[i][ii] = v[ii][i];
+		return Matrix(t);
 	}
 
-	//Length of the vector
-	const float len() const
+	const float det() const
 	{
-		return sqrtf(*this * *this);
+		return v[0] * (v[1] % v[2]);
 	}
-
-	//A normalized vector: V / |V|
-	const Vector operator ~() const
+	// http://en.wikipedia.org/wiki/Matrix_inversion#Methods_of_matrix_inversion
+	Matrix inverse() 
 	{
-		return *this / len();
+			Vector t[3];
+			t[0] = v[1] % v[2];
+			t[1] = v[2] % v[0];
+			t[2] = v[0] % v[1];
+			Matrix m(t);
+			return m.trans() * (1.0f/det());
 	}
-};*/
+	
+	void print() 
+	{
+		for(int i = 0; i < 3; i++) {
+			for(int ii = 0; ii < 3; ii++) {
+				std::cout << v[ii][i] << " ";
+			}
+			std::cout << std::endl;
+		}
+	}
+};
 
 //A class representing a 3D point in space
 struct Point
