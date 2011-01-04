@@ -22,29 +22,33 @@ public:
 	virtual float4 getRadiance(const Ray &_ray)
 	{
 		float4 col = float4::rep(0);
-
-		Primitive::IntRet ret = scene->intersect(_ray, FLT_MAX);
-		if(ret.distance < FLT_MAX && ret.distance >= Primitive::INTEPS())
-		{
-			SmartPtr<Shader> shader = scene->getShader(ret);
-			if(shader.data() != NULL)
+		if(!terminate || count != 0) {
+			count = count - 1;
+			Primitive::IntRet ret = scene->intersect(_ray, FLT_MAX);
+			if(ret.distance < FLT_MAX && ret.distance >= Primitive::INTEPS())
 			{
-				col += shader->getAmbientCoefficient() * ambientLight;
+				SmartPtr<Shader> shader = scene->getShader(ret);
+				if(shader.data() != NULL)
+				{
+					col += shader->getAmbientCoefficient() * ambientLight;
 
-				Point intPt = _ray.o + ret.distance * _ray.d;
+					Point intPt = _ray.o + ret.distance * _ray.d;
 
-				for(std::vector<PointLightSource>::const_iterator it = lightSources.begin(); it != lightSources.end(); it++)
-					if(visibleLS(intPt, it->position))
-					{
-						Vector lightD = it->position - intPt;
-						float4 refl = shader->getReflectance(-_ray.d, lightD);
- 						float dist = lightD.len();
-						float fallOff = it->falloff.x / (dist * dist) + it->falloff.y / dist + it->falloff.z;
-						col += refl * float4::rep(fallOff) * it->intensity;
-					}
+					for(std::vector<PointLightSource>::const_iterator it = lightSources.begin(); it != lightSources.end(); it++)
+						if(visibleLS(intPt, it->position))
+						{
+							Vector lightD = it->position - intPt;
+							float4 refl = shader->getReflectance(-_ray.d, lightD);
+							float dist = lightD.len();
+							float fallOff = it->falloff.x / (dist * dist) + it->falloff.y / dist + it->falloff.z;
+							col += refl * float4::rep(fallOff) * it->intensity;
+						}
 
-				col += shader->getIndirectRadiance(-_ray.d, this);
+					col += shader->getIndirectRadiance(-_ray.d, this);
+				}
 			}
+		} else {
+			terminate = false;
 		}
 
 		return col;

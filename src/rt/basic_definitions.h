@@ -22,6 +22,11 @@ public:
 //	is traveling along the ray towards _ray.o (oposite to _ray.d)
 struct Integrator : public RefCntBase
 {
+	bool terminate;
+	int count;
+	
+	Integrator(): terminate(false) {}
+
 	virtual float4 getRadiance(const Ray &_ray) = 0;
 };
 

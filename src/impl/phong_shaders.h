@@ -153,19 +153,92 @@ public:
 		Matrix pupv = wor * m;
 		pu = pupv.v[0];
 		pu = pupv.v[1];
-	}
-/*	virtual float4 getAmbientCoefficient() const 
-	{ 
-		float4 ret = DefaultPhongShader::getAmbientCoefficient();
-
-		if(bumpTexture.data() != NULL) {
-// 			std::cout << "ok" << std::endl;
-			ret = bumpTexture->sample(m_texCoord);
-		}
-
-		return ret;
-	}*/		
+	}		
 	_IMPLEMENT_CLONE(BumpTexturePhongShader);
+};
+
+class RRPhongShader : public DefaultPhongShader
+{
+public:
+	float n1, n2;
+	Point m_position;
+	virtual float4 getReflCoef(const Vector &_outDir) const
+	{
+		Vector normal = getNormal();
+		// if we hit the surface from inside we swap the n1,n2 and invert normal
+		bool front = true;
+		float nn2 = n2;
+		float nn1 = n1;
+		float nn = nn1/nn2;
+		if(normal * (-_outDir) > 0.0f) {
+			normal = -normal;
+			nn1 = n2;
+			nn2 = n1;
+			nn = nn1/nn2;
+			front = false;
+		}
+		// compute intensity of the reflected light
+		float cosI =  normal * (_outDir);
+		float sinT2 = nn * nn * (1.0f - cosI * cosI);
+		if(sinT2 > 1.0)
+			return float4::rep(1.0);
+		float cosT = sqrt(1 - sinT2);
+		float NOrth = (nn1 * cosI - nn2 * cosT) / (nn1 * cosI + nn2 * cosT);
+		float Rpar =  (nn2 * cosI - nn1 * cosT) / (nn2 * cosI + nn1 * cosT);
+		float R = (NOrth * NOrth + Rpar * Rpar) / 2.0f;
+		return float4::rep(R);
+	}
+	
+	// _out == -ray.d
+	
+	virtual float4 getIndirectRadiance(const Vector &_out, Integrator *_integrator) const
+	{
+		float4 color = float4::rep(0.0f);
+		Vector normal = getNormal();
+		// if we hit the surface from inside we swap the n1,n2 and invert normal
+		bool front = true;
+		float nn2 = n2;
+		float nn1 = n1;
+		float nn = nn1/nn2;
+		if(normal * (-_out) > 0.0f) {
+			normal = -normal;
+			nn1 = n2;
+			nn2 = n1;
+			nn = nn1/nn2;
+			front = false;
+		}
+		float cosI = normal * ( - _out);
+		// first get reflected light
+		Ray newray;
+		newray.d = ~(- _out - 2 * cosI * normal);
+		newray.o = m_position + 0.00000001 * newray.d;
+		float4 reflCoef = getReflCoef(_out);
+		if(front) {
+			_integrator->terminate = true;
+			_integrator->count = 5;
+		}
+		color = reflCoef * _integrator->getRadiance(newray);
+		if(reflCoef[0] < 1.0) {
+			float cosI =  normal * (_out);
+			float sinT2 = nn * nn * (1.0f - cosI * cosI);
+			float cosT = sqrt(1 - sinT2);
+			newray.d  = nn*(-_out) + (((nn * cosI) - cosT) * normal);
+			if(front) {
+				_integrator->terminate = true;
+				_integrator->count = 5;
+			}
+			color = color + ((float4::rep(1.0f) - reflCoef) * _integrator->getRadiance(newray));
+		}
+		if(front)
+			_integrator->terminate = false;
+		return color;
+	}
+	
+
+	
+	virtual void setPosition(const Point& _point) { m_position = _point; }
+
+	_IMPLEMENT_CLONE(RRPhongShader);
 };
 
 #endif //__INCLUDE_GUARD_810F2AF5_7E81_4F1E_AA05_992B6D2C0016

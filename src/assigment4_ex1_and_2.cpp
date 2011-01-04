@@ -71,22 +71,16 @@ void assigment4_1_and_2()
 	cow.addReferencesToScene(scene.primitives);
 	
 	// my phong
-	BumpTexturePhongShader sh;
-	sh.diffuseCoef = float4(0.2f, 0.2f, 0, 0);
+	RRPhongShader sh;
+	sh.n1 = 1.0f;
+	sh.n2 = 1.5f;
+	sh.diffuseCoef = float4(0, 0, 0, 0);
 	sh.ambientCoef = sh.diffuseCoef;
-	sh.specularCoef = float4::rep(0.8f);
-	Image bump;
-	bump.addRef();
-
-	bump.readPNG("models/noise.png");
-	Texture t;
-	t.addRef();
-	t.image = &bump;
-	sh.bumpTexture = &t;
-	sh.specularExponent = 10000.f;
+	sh.specularCoef = float4::rep(0);
+	sh.specularExponent = 1;
 	sh.addRef();
-	InfinitePlane triangle(Point(0,0,0), Vector(0,0,1), &sh);;
-	scene.primitives.push_back(&triangle);
+	Sphere sphere(Point(-2,4,1), 1, &sh);;
+	scene.primitives.push_back(&sphere);
 	scene.rebuildIndex();
 
 	BumpMirrorPhongShader sh4;
@@ -97,7 +91,7 @@ void assigment4_1_and_2()
 	sh4.reflCoef = 0.4f;
 	sh4.setNormal(Vector(0,1,0));
 	sh4.addRef();
-	cow.materials[cow.materialMap["Floor"]].shader = &sh4;
+	//cow.materials[cow.materialMap["Floor"]].shader = &sh4;
 	
  	//Enable bi-linear filtering on the walls
 	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->diffTexture->filterMode = Texture::TFM_Point;
