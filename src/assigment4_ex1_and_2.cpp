@@ -60,12 +60,6 @@ public:
 
 void assigment4_1_and_2()
 {
-	Vector a[3];
-	a[0] = Vector(1, 44 , 72);
-	a[1] = Vector(2, 52 , 84);
-	a[2] = Vector(3, 64 , 94);
-	Matrix m1(a);
-	m1.inverse().print();
 	
 	Image img(800, 600);
 	img.addRef();

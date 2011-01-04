@@ -6,6 +6,7 @@
 
 #include "../rt/shading_basics.h"
 #include "../rt/texture.h"
+#include "../core/algebra.h"
 
 struct DefaultAmbientShader : public PluggableShader
 {
@@ -91,8 +92,8 @@ public:
 	{ 
 		float4 ret = DefaultPhongShader::getAmbientCoefficient();
 
-		if(amibientTexture.data() != NULL)
-			ret = amibientTexture->sample(m_texCoord);
+// 		if(amibientTexture.data() != NULL)
+// 			ret = amibientTexture->sample(m_texCoord);
 
 		return ret;
 	}
@@ -137,8 +138,21 @@ public:
 	}
 	virtual void setPuPv(Point x, Point y, Point z, float2 u, float2 v, float2 w)
 	{ 
-		pu = Vector(1,0,0);
-		pu = Vector(0,1,0);
+		Vector vec[3];
+		vec[0] = Vector(u.x, u.y, 1.0f);
+		vec[1] = Vector(v.x, v.y, 1.0f);
+		vec[2] = Vector(w.x, w.y, 1.0f);
+		Matrix m(vec);
+		m = m.inverse();
+		
+		vec[0] = Vector(x[0], x[1], x[2]);
+		vec[1] = Vector(y[0], y[1], y[2]);
+		vec[2] = Vector(z[0], z[1], z[2]);
+		Matrix wor(vec);
+		
+		Matrix pupv = wor * m;
+		pu = pupv.v[0];
+		pu = pupv.v[1];
 	}
 /*	virtual float4 getAmbientCoefficient() const 
 	{ 
