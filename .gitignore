@@ -1,6 +1,17 @@
-*.cpp\~
-*.h\~
-*.obj
+
+
+*.swp
+*.*~
+*thumbs.db
+
+# compiled object files
+*.o
+
+# compiled dynamic libraries
+*.so
+
+# compiled static libraries
+*.a
 result_cam1.png
 result_cam2.png
 result_ex3_1.png
