@@ -211,26 +211,22 @@ public:
 		// first get reflected light
 		Ray newray;
 		newray.d = ~(- _out - 2 * cosI * normal);
-		newray.o = m_position + 0.00000001 * newray.d;
+		newray.o = m_position + newray.d;
 		float4 reflCoef = getReflCoef(_out);
-		if(front) {
-			_integrator->terminate = true;
-			_integrator->count = 5;
-		}
+
 		color = reflCoef * _integrator->getRadiance(newray);
 		if(reflCoef[0] < 1.0) {
 			float cosI =  normal * (_out);
 			float sinT2 = nn * nn * (1.0f - cosI * cosI);
 			float cosT = sqrt(1 - sinT2);
 			newray.d  = nn*(-_out) + (((nn * cosI) - cosT) * normal);
-			if(front) {
-				_integrator->terminate = true;
-				_integrator->count = 5;
-			}
+			//we enter object 
+// 			if(front) {
+// 				_integrator->terminate = true;
+// 				_integrator->count = 6;
+// 			}
 			color = color + ((float4::rep(1.0f) - reflCoef) * _integrator->getRadiance(newray));
 		}
-		if(front)
-			_integrator->terminate = false;
 		return color;
 	}
 	

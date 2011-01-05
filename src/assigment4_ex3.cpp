@@ -38,21 +38,17 @@ public:
 	virtual void setPosition(const Point& _point) {m_position = _point;}
 	virtual float4 getReflectance(const Vector &_outDir, const Vector &_inDir) const
 	{
-		int steps = (int)((m_position[0] * scale[0])) + (int)((m_position[1] * scale[1])) + (uint)((m_position[2] * scale[2]));
-		if(m_position[0] < 0)
-			steps += 1;
-		if(m_position[1] < 0)
-			steps += 1;
-		if(m_position[2] < 0)
-			steps += 1;
-		if(steps % 2 == 0) {
-			return float4::rep(.0f);
-		} else {
-			return float4::rep(1.0f);
-		}
+		float4 t = float4(m_position) * scale;
+
+		int x = (int)floor(t.x), y = (int)floor(t.y), z = (int)floor(t.z);
+		x %= 2; y %= 2; z %= 2; 
+
+		float col = (float)((6 + x + 0 + z) % 2);
+		return float4::rep(col);
 	}
 
 	_IMPLEMENT_CLONE(CheckBoard3DShader);
+
 };
 
 
@@ -78,15 +74,27 @@ void assigment4_ex3()
 	integrator.scene = &p1;
 
 	DefaultSampler sampDef;
-	sampDef.addRef();	
-	RegularSampler sampReg;
-	sampReg.addRef();sampReg.m = 3;
-	RandomSampler sampRand;
-	sampRand.addRef();sampRand.n = 9;
-	StratifiedSampler sampStrat;
-	sampStrat.addRef();sampStrat.m = 3;
-	
-	SmartPtr<Sampler> samplers[] = {&sampDef, &sampReg, &sampRand, &sampStrat};
+	sampDef.addRef();
+
+	RegularSampler regSamp;
+	regSamp.addRef();
+	regSamp.samplesX = 4;
+	regSamp.samplesY = 4;
+
+	RandomSampler randSamp;
+	randSamp.addRef();
+	randSamp.sampleCount = 16;
+
+	StratifiedSampler stratSamp;
+	stratSamp.addRef();
+	stratSamp.samplesX = 4;
+	stratSamp.samplesY = 4;
+
+	HaltonSampleGenerator haltonSamp;
+	haltonSamp.addRef();
+	haltonSamp.sampleCount = 16;
+
+	SmartPtr<Sampler> samplers[] = {&sampDef, &regSamp, &randSamp, &stratSamp};
 
 	Renderer r;
 	r.camera = &cam1;
@@ -98,7 +106,7 @@ void assigment4_ex3()
 		r.sampler = samplers[s];
 		r.render();
 		std::stringstream ssm;
-		ssm << "result_ex3_" << s + 1 << ".png" << std::flush;
+		ssm << "result_ex3_" << s << ".png" << std::flush;
 		img.writePNG(ssm.str());
 
 	}

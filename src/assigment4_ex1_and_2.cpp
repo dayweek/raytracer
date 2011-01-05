@@ -61,7 +61,7 @@ public:
 void assigment4_1_and_2()
 {
 	
-	Image img(800, 600);
+	Image img(1200, 900);
 	img.addRef();
 
 	//Set up the scene
@@ -125,6 +125,7 @@ void assigment4_1_and_2()
 
 	DefaultSampler samp;
 	samp.addRef();
+// 	samp.sampleCount = 16;
 
 	//Render
 	Renderer r;

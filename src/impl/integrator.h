@@ -12,18 +12,33 @@ struct PointLightSource
 };
 
 
+struct DepthStateKey
+{
+	typedef int t_data;
+};
+
 class IntegratorImpl : public Integrator
 {
 public:
+	enum {_MAX_BOUNCES = 7};
+
 	GeometryGroup *scene;
 	std::vector<PointLightSource> lightSources;
 	float4 ambientLight;
 
+	IntegratorImpl()
+	{
+		state.value<DepthStateKey>() = 0;
+	}
+
 	virtual float4 getRadiance(const Ray &_ray)
 	{
+		state.value<DepthStateKey>()++;
+
 		float4 col = float4::rep(0);
-		if(!terminate || count != 0) {
-			count = count - 1;
+
+		if(state.value<DepthStateKey>() < _MAX_BOUNCES)
+		{
 			Primitive::IntRet ret = scene->intersect(_ray, FLT_MAX);
 			if(ret.distance < FLT_MAX && ret.distance >= Primitive::INTEPS())
 			{
@@ -44,12 +59,12 @@ public:
 							col += refl * float4::rep(fallOff) * it->intensity;
 						}
 
-					col += shader->getIndirectRadiance(-_ray.d, this);
+						col += shader->getIndirectRadiance(-_ray.d, this);
 				}
 			}
-		} else {
-			terminate = false;
 		}
+
+		state.value<DepthStateKey>()--;
 
 		return col;
 	}
@@ -57,12 +72,12 @@ private:
 
 	bool visibleLS(const Point& _pt, const Point& _pls)
 	{
-		Ray r;
-		r.o = _pt;
-		r.d = _pls - _pt;
+        Ray r;
+        r.d = _pls - _pt;
+        r.o = _pt + Primitive::INTEPS() * r.d;
 
-		Primitive::IntRet ret = scene->intersect(r, 1.1f);
-		return ret.distance <= Primitive::INTEPS() || ret.distance >= 1 - Primitive::INTEPS();
+        Primitive::IntRet ret = scene->intersect(r, 1.1f);
+        return ret.distance >= 1 - Primitive::INTEPS();
 	}
 
 };

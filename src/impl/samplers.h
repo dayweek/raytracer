@@ -20,61 +20,100 @@ struct DefaultSampler : public Sampler
 
 };
 
+
 struct RegularSampler : public Sampler
 {
-	int m;
+	uint samplesX, samplesY;
+
 	virtual void getSamples(uint _x, uint _y, std::vector<Sample> &_result)
 	{
-		float weight = 1.0/(m*m);
-		float step = 1.0/m;
-		float start = step / 2;
-		for(int x = 0; x < m; x++)
-			for(int y = 0; y < m; y++) {
+		for(uint x = 0; x < samplesX; x++)
+			for(uint y = 0; y < samplesY; y++)
+			{
+				float2 pos = float2((float)(x), (float)(y));
+				pos = (pos + float2(0.5, 0.5)) / float2((float)samplesX, (float)samplesY);
 				Sample s;
-				s.position = float2(start + step*x, start + step*y);
-				s.weight = weight;
+				s.position = pos;
+				s.weight = 1.f / (float)(samplesX * samplesY);
 				_result.push_back(s);
 			}
 	}
-
 };
+
 struct RandomSampler : public Sampler
 {
-	int n;
+	uint sampleCount;
 	virtual void getSamples(uint _x, uint _y, std::vector<Sample> &_result)
 	{
-		srand ( time(NULL) );
-
-		float weight = 1.0/(n);
-		for(int i = 0; i < n; i++) {
+		for(uint i = 0; i < sampleCount; i++)
+		{
 			Sample s;
-			s.position = float2(((float)rand())/RAND_MAX, ((float)rand()) / RAND_MAX);
-			s.weight = weight;
+			s.position.x = ((float)rand()) / (float)RAND_MAX;
+			s.position.y = ((float)rand()) / (float)RAND_MAX;
+			s.weight = 1.f / (float)sampleCount;
 			_result.push_back(s);
-	  	}
-	  
+		}
 	}
-
 };
 
 struct StratifiedSampler : public Sampler
 {
-	int m;
+	uint samplesX, samplesY;
 	virtual void getSamples(uint _x, uint _y, std::vector<Sample> &_result)
 	{
-		srand ( time(NULL) );
-		float weight = 1.0/(m*m);
-		float step = 1.0/m;
-		for(int x = 0; x < m; x++)
-			for(int y = 0; y < m; y++) {
+		for(uint x = 0; x < samplesX; x++)
+			for(uint y = 0; y < samplesY; y++)
+			{
+				float2 offset = float2(((float)rand()) / (float)RAND_MAX, ((float)rand()) / (float)RAND_MAX);
+
+				float2 pos = float2((float)(x), (float)(y));
+				pos = (pos + offset) / float2((float)samplesX, (float)samplesY);
+
 				Sample s;
-				s.position = float2(step*x + step*(float)rand()/RAND_MAX,step*y + step*(float)rand()/RAND_MAX);
-				s.weight = weight;
+				s.position = pos;
+				s.weight = 1.f / (float)(samplesX * samplesY);
+
 				_result.push_back(s);
 			}
 	}
-
 };
-//TODO: Implement Regular, Random, and Stratified samplers.
+
+
+class HaltonSampleGenerator : public Sampler
+{
+	float inverseRadical(uint _num, uint _radix)
+	{
+		float ret = 0;
+		float curRadix = (float)_radix;
+
+		while(_num != 0)
+		{
+			ret += (float)(_num % _radix) / curRadix;
+			_num /= _radix;
+			curRadix *= (float)_radix;
+		}
+
+		return ret;
+
+	}
+
+public:
+
+	size_t sampleCount;
+
+	virtual void getSamples(uint _x, uint _y, std::vector<Sample> &_result)
+	{
+		static _THREAD_LOCAL uint cur = 0;
+
+		for(size_t i = 0; i < sampleCount; i++)
+		{
+			Sample s;
+			s.position.x = inverseRadical(cur, 2);
+			s.position.y = inverseRadical(cur++, 3);
+			s.weight = 1 / (float)sampleCount;
+			_result.push_back(s);
+		}
+	}
+};
 
 #endif //__INCLUDE_GUARD_EA5235C2_ADC9_40B5_9859_473C44497D3A

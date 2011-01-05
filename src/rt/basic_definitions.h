@@ -7,6 +7,7 @@
 #include "../core/defs.h"
 #include "../core/bbox.h"
 #include "../core/memory.h"
+#include "../core/state.h"
 
 
 //This is the basic class for a camera, used to get a primary ray for a pixel
@@ -22,10 +23,7 @@ public:
 //	is traveling along the ray towards _ray.o (oposite to _ray.d)
 struct Integrator : public RefCntBase
 {
-	bool terminate;
-	int count;
-	
-	Integrator(): terminate(false) {}
+	StateObject state;
 
 	virtual float4 getRadiance(const Ray &_ray) = 0;
 };

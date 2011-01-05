@@ -10,24 +10,31 @@ SmartPtr<Shader> LWObject::Face::getShader(IntRet _intData) const
 
 	shader->setPosition(Point::lerp(m_lwObject->vertices[vert1], m_lwObject->vertices[vert2], 
 		m_lwObject->vertices[vert3], hit->intResult.x, hit->intResult.y));
-	
-	float4 bary = hit->intResult;
 
-	//TODO: Implement texture and normal interpolation
-	//Calculate the normal
-	Vector e1 = m_lwObject->vertices[vert2] - m_lwObject->vertices[vert1];
-	Vector e2 = m_lwObject->vertices[vert3] - m_lwObject->vertices[vert1];
-	Vector norm = ~(~e1 % ~e2);
-	norm = bary[0]*m_lwObject->normals[norm1] + bary[1]*m_lwObject->normals[norm2] + bary[2]*m_lwObject->normals[norm3];
+
+	Vector norm = 
+		m_lwObject->normals[norm1] * hit->intResult.x + 
+		m_lwObject->normals[norm2] * hit->intResult.y + 
+		m_lwObject->normals[norm3] * hit->intResult.z;
 	
 	shader->setNormal(norm);
-	float2 texPos = bary[0]*m_lwObject->texCoords[tex1] + bary[1]*m_lwObject->texCoords[tex2] + bary[2]*m_lwObject->texCoords[tex3];
-	shader->setTextureCoord(texPos);
+
+	if(tex1 != -1 && tex2 != -1 && tex3 != -1)
+	{
+		float2 texPos = 
+			m_lwObject->texCoords[tex1] * hit->intResult.x +  
+			m_lwObject->texCoords[tex2] * hit->intResult.y +  
+			m_lwObject->texCoords[tex3] * hit->intResult.z;
+
+		shader->setTextureCoord(texPos);
+	}
+
+	
 	//set pu, pv for bump mapping
 	shader->setPuPv(m_lwObject->vertices[vert1], m_lwObject->vertices[vert2],m_lwObject->vertices[vert3],
 			m_lwObject->texCoords[tex1], m_lwObject->texCoords[tex2], m_lwObject->texCoords[tex3]);
-
 	return shader;
+
 }
 
 
