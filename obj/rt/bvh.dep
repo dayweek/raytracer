@@ -2,3 +2,7 @@ obj/rt/bvh.o obj/rt/bvh.dep : src/rt/bvh.cpp src/stdafx.h src/rt/bvh.h src/rt/..
  src/rt/../core/defs.h src/rt/basic_definitions.h src/rt/../core/defs.h \
  src/rt/../core/bbox.h src/rt/../core/ray.h src/rt/../core/algebra.h \
  src/rt/../core/state.h
+bvh.o obj/rt/bvh.dep : src/rt/bvh.cpp src/stdafx.h src/rt/bvh.h src/rt/../core/memory.h \
+ src/rt/../core/defs.h src/rt/basic_definitions.h src/rt/../core/defs.h \
+ src/rt/../core/bbox.h src/rt/../core/ray.h src/rt/../core/algebra.h \
+ src/rt/../core/state.h
