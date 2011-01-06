@@ -24,7 +24,16 @@ public:
 struct Integrator : public RefCntBase
 {
 	StateObject state;
+	float end_contribution;
+	virtual void addContribution(const float4 c)
+	{
+		end_contribution = end_contribution * c[0];
+	}
 
+	virtual void removeContribution(const float4 c)
+	{
+		end_contribution = end_contribution / c[0];
+	}
 	virtual float4 getRadiance(const Ray &_ray) = 0;
 };
 

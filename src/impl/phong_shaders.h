@@ -199,8 +199,9 @@ public:
 		Ray newray;
 		newray.d = ~(- _out - 2 * cosI * normal);
 		newray.o = m_position + newray.d;
-
+		_integrator->addContribution(reflCoef);
 		color = reflCoef * _integrator->getRadiance(newray);
+		_integrator->removeContribution(reflCoef);
 		if(sinT2 <= 1.0) {
 			float cosT = sqrt(1 - sinT2);
 			newray.d  = nn*(-_out) + (((nn * cosI) - cosT) * normal);
@@ -209,7 +210,9 @@ public:
 // 				_integrator->terminate = true;
 // 				_integrator->count = 6;
 // 			}
+			_integrator->addContribution(float4::rep(1.0f) - reflCoef);
 			color = color + ((float4::rep(1.0f) - reflCoef) * _integrator->getRadiance(newray));
+			_integrator->removeContribution(float4::rep(1.0f) - reflCoef);
 		}
 		return color;
 	}

@@ -21,7 +21,6 @@ class IntegratorImpl : public Integrator
 {
 public:
 	enum {_MAX_BOUNCES = 7};
-
 	GeometryGroup *scene;
 	std::vector<PointLightSource> lightSources;
 	float4 ambientLight;
@@ -29,15 +28,17 @@ public:
 	IntegratorImpl()
 	{
 		state.value<DepthStateKey>() = 0;
+		end_contribution = 1.0f;
 	}
-
+	
 	virtual float4 getRadiance(const Ray &_ray)
 	{
-		state.value<DepthStateKey>()++;
+		//state.value<DepthStateKey>()++;
 
 		float4 col = float4::rep(0);
 
-		if(state.value<DepthStateKey>() < _MAX_BOUNCES)
+		//if(state.value<DepthStateKey>() < _MAX_BOUNCES)
+		if(end_contribution > 0.05f)
 		{
 			Primitive::IntRet ret = scene->intersect(_ray, FLT_MAX);
 			if(ret.distance < FLT_MAX && ret.distance >= Primitive::INTEPS())
@@ -64,7 +65,7 @@ public:
 			}
 		}
 
-		state.value<DepthStateKey>()--;
+		//state.value<DepthStateKey>()--;
 
 		return col;
 	}

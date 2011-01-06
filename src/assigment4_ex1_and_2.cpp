@@ -76,8 +76,8 @@ void assigment4_1_and_2()
 	sh.n2 = 1.5f;
 	sh.diffuseCoef = float4(0.1, 0.1, 0.1, 0);
 	sh.ambientCoef = sh.diffuseCoef;
-	sh.specularCoef = float4::rep(0.5);
-	sh.specularExponent = 1000;
+	sh.specularCoef = float4::rep(1.0);
+	sh.specularExponent = 100;
 	sh.addRef();
 	Sphere sphere(Point(-2,4,3), 1, &sh);;
 	scene.primitives.push_back(&sphere);
