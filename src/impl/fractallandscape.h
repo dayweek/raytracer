@@ -9,14 +9,25 @@ class FractalLandscape
 	Point corner;
 	
 	FractalLandscape(Point &a, Point &b, uint iterations) {
+		//init
 		corner = Point(std::min(a[0], b[0]), std::min(a[1], b[1]), a[2]);
 		width = abs(a[0] - b[0]);
 		height = abs(a[1] - b[1]);
 		number_of_squares_in_one_axis = pow(2, iterations);
 		number_of_vertices_in_one_axis = number_of_squares_in_one_axis + 1;
 		heights = FloatMap(number_of_squares_in_one_axis);
+		
+		perturbateSurface();
+		generateNormals();
+		generateVertexNormals();
+		generateTriangles();
 	}
-
+protected:
+	
+	void perturbateSurface();
+	void generateNormals();
+	void generateVertexNormals();
+	void generateTriangles();
 	//Adds all triangles contained in this object to a scene
 	void addReferencesToScene(std::vector<Primitive*> &_scene) const;
 };
