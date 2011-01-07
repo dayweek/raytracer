@@ -1,7 +1,8 @@
 #include "../core/algebra.h"
+#include "../core/floatmap.h"
 class FractalLandscape
 {
-	std::vector<float> heights;
+	FloatMap heights;
 	float width, height;
 	uint number_of_squares_in_one_axis;
 	uint number_of_vertices_in_one_axis;
@@ -13,10 +14,10 @@ class FractalLandscape
 		height = abs(a[1] - b[1]);
 		number_of_squares_in_one_axis = pow(2, iterations);
 		number_of_vertices_in_one_axis = number_of_squares_in_one_axis + 1;
-		heights.resize(number_of_squares_in_one_axis * number_of_squares_in_one_axis);
+		heights = FloatMap(number_of_squares_in_one_axis);
 	}
 
 	//Adds all triangles contained in this object to a scene
 	void addReferencesToScene(std::vector<Primitive*> &_scene) const;
-
 };
+
