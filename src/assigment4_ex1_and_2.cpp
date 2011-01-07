@@ -11,6 +11,7 @@
 #include "impl/integrator.h"
 #include "rt/renderer.h"
 #include "impl/samplers.h"
+#include "impl/fractallandscape.h"
 
 class BumpMirrorPhongShader : public DefaultPhongShader
 {
@@ -61,7 +62,7 @@ public:
 void assigment4_1_and_2()
 {
 	
-	Image img(1200, 900);
+	Image img(800, 600);
 	img.addRef();
 
 	//Set up the scene
@@ -69,6 +70,9 @@ void assigment4_1_and_2()
 	LWObject cow;
 	cow.read("models/cow.obj", true);
 	cow.addReferencesToScene(scene.primitives);
+	LWObject sc;
+	sc.read("models/concrete.obj", true);
+	sc.addReferencesToScene(scene.primitives);
 	
 	// my phong
 	RRPhongShader sh;
@@ -97,6 +101,8 @@ void assigment4_1_and_2()
 	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->diffTexture->filterMode = Texture::TFM_Point;
  	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->amibientTexture->filterMode = Texture::TFM_Point;
 	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->bumpTexture->filterMode = Texture::TFM_Point;
+	((BumpTexturePhongShader*)sc.materials[sc.materialMap["Mat"]].shader.data())->diffTexture->addressModeX = Texture::TAM_Wrap;
+	((BumpTexturePhongShader*)sc.materials[sc.materialMap["Mat"]].shader.data())->diffTexture->addressModeY = Texture::TAM_Wrap;
 
 
 	//Set up the cameras

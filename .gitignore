@@ -1,5 +1,5 @@
 
-
+*.dep
 *.swp
 *.*~
 *thumbs.db
