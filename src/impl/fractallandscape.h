@@ -60,10 +60,13 @@ public:
 		width = abs(a[0] - b[0]);
 		number_of_squares_in_one_axis = pow(2, iterations);
 		number_of_vertices_in_one_axis = number_of_squares_in_one_axis + 1;
-		heights = Array2<float>(number_of_squares_in_one_axis);
+		heights = Array2<float>(number_of_vertices_in_one_axis);
+		vertexNormals = Array2<Vector>(number_of_vertices_in_one_axis);
+		squareNormals = Array2<Vector>(number_of_squares_in_one_axis);
+		vertices = Array2<Point>(number_of_vertices_in_one_axis);
 		one_square_width = width/number_of_squares_in_one_axis;
 		
-		resetHeights(0.0f);
+		resetHeights(a[2]);
 		perturbateSurface();
 		generateNormals();
 		generateVertexNormals();
@@ -133,18 +136,18 @@ protected:
 	void generateTriangles()
 	{
 		// compute vertices
-		for(uint y = 0; y < number_of_squares_in_one_axis; y++) 
-			for(uint x = 0; x < number_of_squares_in_one_axis; x++)
+		for(uint y = 0; y < number_of_vertices_in_one_axis; y++) 
+			for(uint x = 0; x < number_of_vertices_in_one_axis; x++)
 				vertices(x, y) = Point(one_square_width * x, one_square_width * y, heights(x, y));
 
 		for(uint y = 0; y < number_of_squares_in_one_axis; y++) 
 			for(uint x = 0; x < number_of_squares_in_one_axis; x++) {	
 				Face f1(this);
 				Face f2(this);
-				f1.norm1x = f1.vert1x = f2.norm1x = f2.vert1x = f1.norm2x = f1.vert2x = x;
+				f1.norm1x = f1.vert1x = f2.norm1x = f2.vert1x = f2.norm2x = f2.vert2x = x;
 				f1.norm1y = f1.vert1y = f2.norm1y = f2.vert1y = f1.norm2y = f1.vert2y = y;
 				f1.norm3x = f1.vert3x = f2.norm3x = f2.vert3x = f1.norm2x = f1.vert2x = x + 1;
-				f1.norm3y = f1.vert3y = f2.norm3y = f2.vert3y = f1.norm2y = f1.vert2y = y + 1;
+				f1.norm3y = f1.vert3y = f2.norm3y = f2.vert3y = f2.norm2y = f2.vert2y = y + 1;
 				faces.push_back(f1);
 				faces.push_back(f2);
 			}

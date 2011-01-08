@@ -77,9 +77,10 @@ void assigment4_1_and_2()
 	DefaultAmbientShader as;
 	as.addRef();
 	as.ambientCoefficient = float4(1.0, 0.5, 0.5, 0.0f);
-	FractalLandscape f(Point(1,0,1), Point(0,1,1), (uint)2);
+	FractalLandscape f(Point(1,0,1), Point(0,1,1), 1);
 	f.shader = &as;
 	f.addReferencesToScene(scene.primitives);
+	scene.rebuildIndex();
 	
 	// my phong
 	RRPhongShader sh;
@@ -92,7 +93,7 @@ void assigment4_1_and_2()
 	sh.addRef();
 // 	Sphere sphere(Point(-2,4,3), 1, &sh);;
 // 	scene.primitives.push_back(&sphere);
-	scene.rebuildIndex();
+	//scene.rebuildIndex();
 
 	BumpMirrorPhongShader sh4;
 	sh4.diffuseCoef = float4(0.2f, 0.2f, 0, 0);

@@ -31,8 +31,8 @@ SmartPtr<Shader> FractalLandscape::Face::getShader(IntRet _intData) const
 
 	
 	//set pu, pv for bump mapping
-	shader->setPuPv(m_fractal->vertices(vert1x, vert1y), m_fractal->vertices(vert2x, vert2y),m_fractal->vertices(vert3x, vert3y),
-			m_fractal->texCoords[tex1], m_fractal->texCoords[tex2], m_fractal->texCoords[tex3]);
+// 	shader->setPuPv(m_fractal->vertices(vert1x, vert1y), m_fractal->vertices(vert2x, vert2y),m_fractal->vertices(vert3x, vert3y),
+// 			m_fractal->texCoords[tex1], m_fractal->texCoords[tex2], m_fractal->texCoords[tex3]);
 	return shader;
 
 }
@@ -67,6 +67,5 @@ BBox FractalLandscape::Face::getBBox() const
 	ret.extend(m_fractal->vertices(vert1x, vert1y));
 	ret.extend(m_fractal->vertices(vert2x, vert2y));
 	ret.extend(m_fractal->vertices(vert3x, vert3y));
-
 	return ret;
 }
