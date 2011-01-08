@@ -11,6 +11,7 @@
 #include "impl/integrator.h"
 #include "rt/renderer.h"
 #include "impl/samplers.h"
+#include "impl/fractallandscape.h"
 
 class BumpMirrorPhongShader : public DefaultPhongShader
 {
@@ -66,12 +67,19 @@ void assigment4_1_and_2()
 
 	//Set up the scene
 	GeometryGroup scene;
-	LWObject cow;
-	cow.read("models/cow.obj", true);
-	cow.addReferencesToScene(scene.primitives);
-	LWObject sc;
-	sc.read("models/concrete.obj", true);
-	sc.addReferencesToScene(scene.primitives);
+// 	LWObject cow;
+// 	cow.read("models/cow.obj", true);
+// 	cow.addReferencesToScene(scene.primitives);
+// 	LWObject sc;
+// 	sc.read("models/concrete.obj", true);
+// 	sc.addReferencesToScene(scene.primitives);
+	
+	DefaultAmbientShader as;
+	as.addRef();
+	as.ambientCoefficient = float4(1.0, 0.5, 0.5, 0.0f);
+	FractalLandscape f(Point(1,0,1), Point(0,1,1), (uint)2);
+	f.shader = &as;
+	f.addReferencesToScene(&scene);
 	
 	// my phong
 	RRPhongShader sh;
@@ -82,8 +90,8 @@ void assigment4_1_and_2()
 	sh.specularCoef = float4::rep(1.0);
 	sh.specularExponent = 100;
 	sh.addRef();
-	Sphere sphere(Point(-2,4,3), 1, &sh);;
-	scene.primitives.push_back(&sphere);
+// 	Sphere sphere(Point(-2,4,3), 1, &sh);;
+// 	scene.primitives.push_back(&sphere);
 	scene.rebuildIndex();
 
 	BumpMirrorPhongShader sh4;
@@ -97,11 +105,11 @@ void assigment4_1_and_2()
 	//cow.materials[cow.materialMap["Floor"]].shader = &sh4;
 	
  	//Enable bi-linear filtering on the walls
-	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->diffTexture->filterMode = Texture::TFM_Point;
- 	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->amibientTexture->filterMode = Texture::TFM_Point;
-	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->bumpTexture->filterMode = Texture::TFM_Point;
-	((BumpTexturePhongShader*)sc.materials[sc.materialMap["Mat"]].shader.data())->diffTexture->addressModeX = Texture::TAM_Wrap;
-	((BumpTexturePhongShader*)sc.materials[sc.materialMap["Mat"]].shader.data())->diffTexture->addressModeY = Texture::TAM_Wrap;
+// 	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->diffTexture->filterMode = Texture::TFM_Point;
+//  	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->amibientTexture->filterMode = Texture::TFM_Point;
+// 	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->bumpTexture->filterMode = Texture::TFM_Point;
+// 	((BumpTexturePhongShader*)sc.materials[sc.materialMap["Mat"]].shader.data())->diffTexture->addressModeX = Texture::TAM_Wrap;
+// 	((BumpTexturePhongShader*)sc.materials[sc.materialMap["Mat"]].shader.data())->diffTexture->addressModeY = Texture::TAM_Wrap;
 
 
 	//Set up the cameras

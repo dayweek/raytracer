@@ -54,7 +54,7 @@ public:
 	t_texCoordVector texCoords;
 	SmartPtr<PluggableShader> shader;
 	
-	FractalLandscape(Point &a, Point &b, uint iterations) {
+	FractalLandscape(Point a, Point b, uint iterations) {
 		//init
 		corner = Point(std::min(a[0], b[0]), std::min(a[1], b[1]), a[2]);
 		width = abs(a[0] - b[0]);
@@ -70,7 +70,11 @@ public:
 		generateTriangles();
 	}
 	//Adds all triangles contained in this object to a scene
-	void addReferencesToScene(std::vector<Primitive*> &_scene) const;
+	void addReferencesToScene(std::vector<Primitive*> &_scene) const 
+	{
+		for(std::vector<Face>::const_iterator it = faces.begin(); it != faces.end(); it++)
+			_scene.push_back((Primitive*)&*it);	
+	}
 protected:
 	void resetHeights(float h)
 	{
@@ -79,7 +83,9 @@ protected:
 				heights(x, y) = h;
 	}
 	
-	void perturbateSurface();
+	void perturbateSurface()
+	{
+	}
 	
 	void generateNormals() 
 	{
