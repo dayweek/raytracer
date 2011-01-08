@@ -1,7 +1,21 @@
 #include "../core/algebra.h"
 #include "../core/array2.h"
+#include "../rt/basic_definitions.h"
+#include "../rt/bvh.h"
+#include "../rt/shading_basics.h"
+#include "../rt/texture.h"
+
 class FractalLandscape
 {
+private:
+	//This is the structure that is filled from the intersection
+	//	routine and is than passed to the getShader routine, in case
+	//	the face is the closest to the origin of the ray.
+	struct ExtHitPoint : RefCntBase
+	{
+		//The barycentric coordinate (in .x, .y, .z) + the distance (in .w)
+		float4 intResult;
+	};
 public:
 	Array2<float> heights;
 	Array2<Vector> squareNormals;
@@ -11,6 +25,37 @@ public:
 	uint number_of_vertices_in_one_axis;
 	float one_square_width;
 	Point corner;
+	
+
+	
+	//A face definition (triangle)
+	class Face : public Primitive
+	{
+		FractalLandscape *m_fractal;
+	public:
+		size_t vert1, tex1, norm1;
+		size_t vert2, tex2, norm2;
+		size_t vert3, tex3, norm3;
+
+		Face(FractalLandscape * _obj) : m_fractal(_obj) {}
+
+		virtual IntRet intersect(const Ray& _ray, float _previousBestDistance ) const;
+
+		virtual BBox getBBox() const;
+
+		virtual SmartPtr<Shader> getShader(IntRet _intData) const;
+	};
+	
+	typedef std::vector<Point> t_pointVector;
+	typedef std::vector<Vector> t_vectVector;
+	typedef std::vector<Face> t_faceVector;
+	typedef std::vector<float2> t_texCoordVector;
+
+	t_pointVector vertices;
+	t_vectVector normals;
+	t_faceVector faces;
+	t_texCoordVector texCoords;
+	SmartPtr<PluggableShader> shader;
 	
 	FractalLandscape(Point &a, Point &b, uint iterations) {
 		//init
