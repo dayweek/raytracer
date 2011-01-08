@@ -20,7 +20,8 @@ public:
 	Array2<float> heights;
 	Array2<Vector> squareNormals;
 	Array2<Vector> vertexNormals;
-	float width, height;
+	Array2<Point> vertices;
+	float width;
 	uint number_of_squares_in_one_axis;
 	uint number_of_vertices_in_one_axis;
 	float one_square_width;
@@ -33,9 +34,9 @@ public:
 	{
 		FractalLandscape *m_fractal;
 	public:
-		size_t vert1, tex1, norm1;
-		size_t vert2, tex2, norm2;
-		size_t vert3, tex3, norm3;
+		size_t vert1x, vert1y, tex1, norm1x, norm1y;
+		size_t vert2x, vert2y, tex2, norm2x, norm2y;
+		size_t vert3x, vert3y, tex3, norm3x, norm3y;
 
 		Face(FractalLandscape * _obj) : m_fractal(_obj) {}
 
@@ -46,13 +47,9 @@ public:
 		virtual SmartPtr<Shader> getShader(IntRet _intData) const;
 	};
 	
-	typedef std::vector<Point> t_pointVector;
-	typedef std::vector<Vector> t_vectVector;
 	typedef std::vector<Face> t_faceVector;
 	typedef std::vector<float2> t_texCoordVector;
 
-	t_pointVector vertices;
-	t_vectVector normals;
 	t_faceVector faces;
 	t_texCoordVector texCoords;
 	SmartPtr<PluggableShader> shader;
@@ -61,7 +58,6 @@ public:
 		//init
 		corner = Point(std::min(a[0], b[0]), std::min(a[1], b[1]), a[2]);
 		width = abs(a[0] - b[0]);
-		height = abs(a[1] - b[1]);
 		number_of_squares_in_one_axis = pow(2, iterations);
 		number_of_vertices_in_one_axis = number_of_squares_in_one_axis + 1;
 		heights = Array2<float>(number_of_squares_in_one_axis);
@@ -127,7 +123,26 @@ protected:
 				n = ~n;
 			}		
 	}
-	void generateTriangles();
+	
+	void generateTriangles()
+	{
+		// compute vertices
+		for(uint y = 0; y < number_of_squares_in_one_axis; y++) 
+			for(uint x = 0; x < number_of_squares_in_one_axis; x++)
+				vertices(x, y) = Point(one_square_width * x, one_square_width * y, heights(x, y));
+
+		for(uint y = 0; y < number_of_squares_in_one_axis; y++) 
+			for(uint x = 0; x < number_of_squares_in_one_axis; x++) {	
+				Face f1(this);
+				Face f2(this);
+				f1.norm1x = f1.vert1x = f2.norm1x = f2.vert1x = f1.norm2x = f1.vert2x = x;
+				f1.norm1y = f1.vert1y = f2.norm1y = f2.vert1y = f1.norm2y = f1.vert2y = y;
+				f1.norm3x = f1.vert3x = f2.norm3x = f2.vert3x = f1.norm2x = f1.vert2x = x + 1;
+				f1.norm3y = f1.vert3y = f2.norm3y = f2.vert3y = f1.norm2y = f1.vert2y = y + 1;
+				faces.push_back(f1);
+				faces.push_back(f2);
+			}
+	}
 	
 
 };
