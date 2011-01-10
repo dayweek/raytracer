@@ -17,7 +17,7 @@ SmartPtr<Shader> FractalLandscape::Face::getShader(IntRet _intData) const
 		m_fractal->vertexNormals(norm2x, norm2y) * hit->intResult.y + 
 		m_fractal->vertexNormals(norm3x, norm3y) * hit->intResult.z;
 	
-	shader->setNormal(norm);
+ 	shader->setNormal(norm);
 
 // 	if(tex1 != -1 && tex2 != -1 && tex3 != -1)
 // 	{
