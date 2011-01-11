@@ -1,3 +1,8 @@
+#ifndef __ARRAY2_INCLUDED
+#define __ARRAY2_INCLUDED
+
+
+
 template <class T>
 class Array2
 {
@@ -27,3 +32,4 @@ public:
 	}
 
 };
+#endif __ARRAY2_INCLUDED

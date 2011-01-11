@@ -7,6 +7,7 @@
 #include "../rt/shading_basics.h"
 #include "../rt/texture.h"
 #include "../core/algebra.h"
+#include "../core/perlin.h"
 
 struct DefaultAmbientShader : public PluggableShader
 {
