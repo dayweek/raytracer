@@ -11,7 +11,9 @@ SmartPtr<Shader> FractalLandscape::Face::getShader(IntRet _intData) const
 	shader->setPosition(Point::lerp(m_fractal->vertices(vert1x, vert1y), m_fractal->vertices(vert2x, vert2y), 
 		m_fractal->vertices(vert3x, vert3y), hit->intResult.x, hit->intResult.y));
 
-
+	float hh;
+	hh = m_fractal->vertices(vert3x, vert3y)[2];
+	
 	Vector norm = 
 		m_fractal->vertexNormals(norm1x, norm1y) * hit->intResult.x + 
 		m_fractal->vertexNormals(norm2x, norm2y) * hit->intResult.y + 

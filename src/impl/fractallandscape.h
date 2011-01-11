@@ -137,7 +137,10 @@ protected:
 				Vector vy(0,
 					 one_square_width,
 					 heights(x,y + 1) - heights(x,y));
-				squareNormals(x,y) = ~(vx % vy);
+				Vector n = ~(vx % vy);
+				float vyska = n[2];
+				squareNormals(x,y) = n;
+				
 			}
 	}
 	
@@ -172,12 +175,16 @@ protected:
 	
 	void generateTriangles()
 	{
+		float hh;
+		float c;
 		// compute vertices
 		for(uint y = 0; y < number_of_vertices_in_one_axis; y++) 
-			for(uint x = 0; x < number_of_vertices_in_one_axis; x++)
+			for(uint x = 0; x < number_of_vertices_in_one_axis; x++) {
 				vertices(x, y) = Point(corner[0] + (x / (float) (number_of_vertices_in_one_axis - 1)) * width,
 						       corner[1] + (y / (float) (number_of_vertices_in_one_axis - 1)) * width, 
 						       heights(x, y) + corner[2]);
+
+			}
 		int i = 0;
 		for(uint y = 0; y < number_of_squares_in_one_axis; y++) 
 			for(uint x = 0; x < number_of_squares_in_one_axis; x++) {	

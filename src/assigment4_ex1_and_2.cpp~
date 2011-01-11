@@ -78,9 +78,9 @@ void assigment4_1_and_2()
 	as.addRef();
 	as.diffuseCoef = float4(0.2f, 0.2f, 0, 0);
 	as.ambientCoef = as.diffuseCoef;
-	as.specularCoef = float4::rep(0.8f);
+	as.specularCoef = float4::rep(0);
 	as.specularExponent = 10000.f;
-	FractalLandscape f(Point(-4,-1,1), Point(10,10,1), 12, 0.1);
+	FractalLandscape f(Point(-3,-3,1), Point(10,10,1), 9, 0.1);
 	f.shader = &as;
 	f.addReferencesToScene(scene.primitives);
 	scene.rebuildIndex();
@@ -135,8 +135,15 @@ void assigment4_1_and_2()
 	pls.falloff = float4(0, 0, 1, 0);
 
 	pls.intensity  = float4::rep(0.9f);
-	pls.position = Point(-2.473637f, 3.119330f,4.571486f);
+	pls.position = Point(-4, -1, 10);
 	integrator.lightSources.push_back(pls);
+// 	PointLightSource pls2;
+// 
+// 	pls2.falloff = float4(0, 0, 1, 0);
+// 
+// 	pls2.intensity  = float4::rep(0.9f);
+// 	pls2.position = Point(0, 0,4.571486f);
+// 	integrator.lightSources.push_back(pls2);
 
 	integrator.ambientLight = float4::rep(0.1f);
 
