@@ -60,7 +60,7 @@ public:
 	
 	FractalLandscape(Point a, Point b, uint _iterations, float _h) {
 		//init
-		srand((unsigned)time(0)); 
+ 
 		corner = Point(std::min(a[0], b[0]), std::min(a[1], b[1]), a[2]);
 		width = abs(a[0] - b[0]);
 		number_of_squares_in_one_axis = pow(2, _iterations);

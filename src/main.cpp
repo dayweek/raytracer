@@ -10,6 +10,7 @@ int main(int argc, char* argv[])
 {
 	//try
 	{
+		srand((unsigned)time(0));
 		assigment4_1_and_2();
 		//assigment4_ex3();
 	}
