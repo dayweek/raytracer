@@ -74,15 +74,15 @@ void assigment4_1_and_2()
 // 	sc.read("models/concrete.obj", true);
 // 	sc.addReferencesToScene(scene.primitives);
 	
-	DefaultPhongShader as;
-	as.addRef();
-	as.diffuseCoef = float4(0.2f, 0.2f, 0, 0);
-	as.ambientCoef = as.diffuseCoef;
-	as.specularCoef = float4::rep(0);
-	as.specularExponent = 10000.f;
-	FractalLandscape f(Point(-3,-3,1), Point(10,10,1), 9, 0.1);
-	f.shader = &as;
-	f.addReferencesToScene(scene.primitives);
+// 	DefaultPhongShader as;
+// 	as.addRef();
+// 	as.diffuseCoef = float4(0.2f, 0.2f, 0, 0);
+// 	as.ambientCoef = as.diffuseCoef;
+// 	as.specularCoef = float4::rep(0);
+// 	as.specularExponent = 10000.f;
+// 	FractalLandscape f(Point(-3,0,1), Point(10,13,1), 9, 0.1);
+// 	f.shader = &as;
+// 	f.addReferencesToScene(scene.primitives);
 	scene.rebuildIndex();
 	
 	// my phong
@@ -158,9 +158,20 @@ void assigment4_1_and_2()
 	r.sampler = &samp;
 
 	r.camera = &cam1;
-	r.render();
-	img.writePNG("result_cam1.png");
-
+// 	r.render();
+// 	img.writePNG("result_cam1.png");
+	
+	int ss = 5;
+	Image img2(100, 100);
+	img2.addRef();
+	Perlin p(5, 0.5, 10);
+	float4 color;
+	for(int y = 0; y  < 100; y++)
+		for(int x = 0; x  < 100; x++) {
+			color = float4::rep((p.sample((x + 0.5f) /20.0 ,(y  + 0.5f) /20.0));
+			img2(x,y)=color;
+		}
+	img2.writePNG("perlin.png");
 	//For seeing the difference in texture filtering
 // 	r.camera = &cam2;
 // 	r.render();
