@@ -32,4 +32,4 @@ public:
 	}
 
 };
-#endif __ARRAY2_INCLUDED
+#endif //__ARRAY2_INCLUDED

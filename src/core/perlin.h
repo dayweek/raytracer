@@ -12,8 +12,8 @@ public:
 	uint width;
 	SmoothNoise(uint _width)
 	{
-		// widht + 2
-		noise = Array2<float>(width);
+		// widht + 4
+		noise = Array2<float>(width + 2);
 		width = _width;
 		generateRandoms();
 	}
@@ -31,7 +31,8 @@ public:
 	
 	float smoothedSample(uint x, uint y)
 	{
-		
+		x += 1;
+		y += 1;
 		float corners = (noise(x-1,y-1) + noise(x+1,y+1) 
 			+ noise(x - 1,y + 1) + noise(x + 1, y- 1)) / 16.0f;
 		float sides = (noise(x-1,y) + noise(x,y-1) 
@@ -49,7 +50,16 @@ public:
 	float persistence;
 	std::vector<SmoothNoise> noises;
 	int n_octaves;
+	uint width;
 	//constructor
+	Perlin(uint _width, float persistence) 
+	{
+		width = _width;
+		int n_octaves = 3;
+		for(int i = 1; i <= n_octaves; i++)
+			noises.push_back(SmoothNoise(i * width));
+		
+	}
 	float linearInterpolation(float fx, float fy, float fraction) 
 	{
 		return (1 - fraction) * fx + fraction * fy;
@@ -76,4 +86,4 @@ public:
 		}
 	}
 };
-#endif __PERLIN_INCLUDED
+#endif //__PERLIN_INCLUDED
