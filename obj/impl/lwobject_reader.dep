@@ -6,6 +6,9 @@ obj/impl/lwobject_reader.o obj/impl/lwobject_reader.dep : src/impl/lwobject_read
  src/impl/../rt/../core/defs.h src/impl/../rt/../core/state.h \
  src/impl/../rt/bvh.h src/impl/../rt/basic_definitions.h \
  src/impl/../rt/shading_basics.h src/impl/../rt/../rt/basic_definitions.h \
- src/impl/../rt/texture.h src/impl/../rt/../core/image.h \
- src/impl/../rt/../core/memory.h src/impl/phong_shaders.h \
- src/impl/../core/perlin.h src/impl/../core/../core/array2.h
+ src/impl/../rt/texture.h src/impl/../rt/../rt/texture_basics.h \
+ src/impl/../rt/../rt/../core/image.h src/impl/../rt/../rt/../core/defs.h \
+ src/impl/../rt/../rt/../core/algebra.h \
+ src/impl/../rt/../rt/../core/memory.h src/impl/../rt/../core/image.h \
+ src/impl/phong_shaders.h src/impl/../core/perlin.h \
+ src/impl/../core/../core/array2.h

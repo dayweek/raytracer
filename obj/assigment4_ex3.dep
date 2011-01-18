@@ -6,7 +6,8 @@ obj/assigment4_ex3.o obj/assigment4_ex3.dep : src/assigment4_ex3.cpp src/stdafx.
  src/core/algebra.h src/core/util.h src/core/../core/algebra.h \
  src/rt/basic_definitions.h src/impl/../rt/shading_basics.h \
  src/impl/../rt/../rt/basic_definitions.h src/impl/phong_shaders.h \
- src/impl/../rt/texture.h src/impl/../rt/../core/image.h \
+ src/impl/../rt/texture.h src/impl/../rt/../rt/texture_basics.h \
+ src/impl/../rt/../rt/../core/image.h src/impl/../rt/../core/image.h \
  src/impl/../core/algebra.h src/impl/../core/perlin.h \
  src/impl/../core/../core/array2.h src/impl/perspective_camera.h \
  src/impl/samplers.h src/impl/../rt/renderer.h \
