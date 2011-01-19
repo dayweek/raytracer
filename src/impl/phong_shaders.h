@@ -8,6 +8,7 @@
 #include "../rt/texture.h"
 #include "../core/algebra.h"
 #include "../core/perlin.h"
+#include "../rt/noise_textures.h"
 
 struct DefaultAmbientShader : public PluggableShader
 {
@@ -93,8 +94,8 @@ public:
 	{ 
 		float4 ret = DefaultPhongShader::getAmbientCoefficient();
 
-// 		if(amibientTexture.data() != NULL)
-// 			ret = amibientTexture->sample(m_texCoord);
+		if(amibientTexture.data() != NULL)
+			ret = amibientTexture->sample(m_texCoord);
 
 		return ret;
 	}
@@ -102,12 +103,12 @@ public:
 	virtual void getCoeff(float4 &_diffuseCoef, float4 &_specularCoef, float &_specularExponent) const
 	{
 		DefaultPhongShader::getCoeff(_diffuseCoef, _specularCoef, _specularExponent);
-/*
+
 		if(diffTexture.data() != NULL)
 			_diffuseCoef = diffTexture->sample(m_texCoord);
 
 		if(specTexture.data() != NULL)
-			_specularCoef = specTexture->sample(m_texCoord);*/
+			_specularCoef = specTexture->sample(m_texCoord);
 	}
 
 	
@@ -223,6 +224,41 @@ public:
 	virtual void setPosition(const Point& _point) { m_position = _point; }
 
 	_IMPLEMENT_CLONE(RRPhongShader);
+};
+
+//A phong shader that supports texturing
+class ProceduralPhongShader : public TexturedPhongShader
+{
+public:
+	SmartPtr<TextureBase> diffNoiseTexture;
+	SmartPtr<TextureBase> amibientNoiseTexture;
+	SmartPtr<TextureBase> specNoiseTexture;
+	
+
+	virtual float4 getAmbientCoefficient() const 
+	{ 
+		float4 ret = TexturedPhongShader::getAmbientCoefficient();
+
+		if(amibientNoiseTexture.data() != NULL)
+			ret = amibientNoiseTexture->sample(m_texCoord);
+
+		return ret;
+	}
+
+	virtual void getCoeff(float4 &_diffuseCoef, float4 &_specularCoef, float &_specularExponent) const
+	{
+		TexturedPhongShader::getCoeff(_diffuseCoef, _specularCoef, _specularExponent);
+
+		if(diffNoiseTexture.data() != NULL)
+			_diffuseCoef = diffNoiseTexture->sample(m_texCoord);
+
+
+		if(specNoiseTexture.data() != NULL)
+			_specularCoef = specNoiseTexture->sample(m_texCoord);
+	}
+
+	
+	_IMPLEMENT_CLONE(ProceduralPhongShader);
 };
 
 #endif //__INCLUDE_GUARD_810F2AF5_7E81_4F1E_AA05_992B6D2C0016

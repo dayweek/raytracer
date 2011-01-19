@@ -36,9 +36,9 @@ newmtl Stones
 	Kd 0.5882 0.5882 0.5882
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka masonry.png
+	#map_Ka stones_diffuse.png
 	map_Kd stones_diffuse.png
-	map_bump -bm 0.4000 masonry_bump.png
+	map_bump -bm 0.4000 stones_bump.png
 
 newmtl Floor
 	Ns 93.0000

@@ -2,6 +2,7 @@
 #define __PERLIN_INCLUDED
 
 #include "../core/array2.h"
+#include "memory.h"
 
 // 2D smoothed noise
 class SmoothNoise
@@ -30,7 +31,7 @@ public:
 		return (((rand() / (float)RAND_MAX)) * 2) - 1.0;	
 	}
 	
-	float smoothedSample(uint x, uint y)
+	float smoothedSample(uint x, uint y) const
 	{
 		x += 2;
 		y += 2;
@@ -45,7 +46,7 @@ public:
 };
 
 
-class Perlin
+class Perlin: public RefCntBase
 {
 public:
 	float persistence;
@@ -67,11 +68,11 @@ public:
 		}
 		
 	}
-	float linearInterpolation(float fx, float fy, float fraction) 
+	float linearInterpolation(float fx, float fy, float fraction) const
 	{
 		return (1 - fraction) * fx + fraction * fy;
 	}
-	float interpolatedNoise(float fx, float fy, int noise_i) 
+	float interpolatedNoise(float fx, float fy, int noise_i) const
 	{
 		int x = (int)fx;
 		int y = (int)fy;
@@ -82,17 +83,17 @@ public:
 		float li = linearInterpolation(l1, l2, fractiony);	
 		return li;
 	}
-	float noise(float x, float y, float frequency, float amplitude, int noise_i) 
+	virtual float noise(float x, float y, float frequency, float amplitude, int noise_i) const
 	{
 		return (interpolatedNoise(x * frequency, y * frequency, noise_i)) * amplitude;
 	}
-	float customize(float x, float y, float total) 
+	virtual	float customize(float x, float y, float total) const
 	{
 		//return 0.5 * (1.0 + sin(x + c*total));
 		//return sin(x +  total);
 		return (total + 1.0) / 2.0;
 	}
-	float sample(float x, float y) 
+	float sample(float x, float y) const
 	{
 		float frequency = 1;
 		float amplitude = 1;
@@ -104,5 +105,10 @@ public:
 		}
 		return customize(x, y, total);
 	}
+	float getWidth() const
+	{
+		return (float)width;
+	}
 };
+
 #endif //__PERLIN_INCLUDED

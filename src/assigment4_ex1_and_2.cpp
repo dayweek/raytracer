@@ -12,6 +12,7 @@
 #include "rt/renderer.h"
 #include "impl/samplers.h"
 #include "impl/fractallandscape.h"
+#include "rt/noise_textures.h"
 
 class BumpMirrorPhongShader : public DefaultPhongShader
 {
@@ -67,9 +68,9 @@ void assigment4_1_and_2()
 
 	//Set up the scene
 	GeometryGroup scene;
-// 	LWObject cow;
-// 	cow.read("models/cow.obj", true);
-// 	cow.addReferencesToScene(scene.primitives);
+	LWObject cow;
+	cow.read("models/cow.obj", true);
+	cow.addReferencesToScene(scene.primitives);
 // 	LWObject sc;
 // 	sc.read("models/concrete.obj", true);
 // 	sc.addReferencesToScene(scene.primitives);
@@ -106,12 +107,26 @@ void assigment4_1_and_2()
 	sh4.reflCoef = 0.4f;
 	sh4.setNormal(Vector(0,1,0));
 	sh4.addRef();
-	//cow.materials[cow.materialMap["Floor"]].shader = &sh4;
+	cow.materials[cow.materialMap["Floor"]].shader = &sh4;
+	
+	//sample shader for noise
+	ProceduralPhongShader ns;
+	CloudTexture nt;
+	nt.addRef();
+	ns.amibientNoiseTexture = &nt;
+	ns.diffNoiseTexture = &nt;
+	ns.diffuseCoef = float4(0.2f, 0.2f, 0, 0);
+	ns.ambientCoef = ns.diffuseCoef;
+	ns.specularCoef = float4::rep(0.8f);
+	ns.specularExponent = 10000.f;
+	ns.addRef();
+// 	float w = ns.amibientNoiseTexture->perlin->width;
+	cow.materials[cow.materialMap["Stones"]].shader = &ns;
 	
  	//Enable bi-linear filtering on the walls
-// 	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->diffTexture->filterMode = Texture::TFM_Point;
-//  	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->amibientTexture->filterMode = Texture::TFM_Point;
-// 	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->bumpTexture->filterMode = Texture::TFM_Point;
+//	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->diffTexture->filterMode = Texture::TFM_Point;
+ 	//((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->amibientTexture->filterMode = Texture::TFM_Point;
+	//((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->bumpTexture->filterMode = Texture::TFM_Point;
 // 	((BumpTexturePhongShader*)sc.materials[sc.materialMap["Mat"]].shader.data())->diffTexture->addressModeX = Texture::TAM_Wrap;
 // 	((BumpTexturePhongShader*)sc.materials[sc.materialMap["Mat"]].shader.data())->diffTexture->addressModeY = Texture::TAM_Wrap;
 
@@ -158,20 +173,20 @@ void assigment4_1_and_2()
 	r.sampler = &samp;
 
 	r.camera = &cam1;
-// 	r.render();
-// 	img.writePNG("result_cam1.png");
+	r.render();
+	img.writePNG("result_cam1.png");
 	
-	int ss = 5;
-	Image img2(100, 100);
-	img2.addRef();
-	Perlin p(5, 0.5, 10);
-	float4 color;
-	for(int y = 0; y  < 100; y++)
-		for(int x = 0; x  < 100; x++) {
-			color = float4::rep(p.sample((x + 0.5f) /20.0 ,(y  + 0.5f) /20.0));
-			img2(x,y)=color;
-		}
-	img2.writePNG("perlin.png");
+// 	int ss = 5;
+// 	Image img2(100, 100);
+// 	img2.addRef();
+// 	Perlin p(5, 0.5, 10);
+// 	float4 color;
+// 	for(int y = 0; y  < 100; y++)
+// 		for(int x = 0; x  < 100; x++) {
+// 			color = float4::rep(p.sample((x + 0.5f) /20.0 ,(y  + 0.5f) /20.0));
+// 			img2(x,y)=color;
+// 		}
+// 	img2.writePNG("perlin.png");
 	//For seeing the difference in texture filtering
 // 	r.camera = &cam2;
 // 	r.render();

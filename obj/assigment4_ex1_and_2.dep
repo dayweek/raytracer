@@ -11,10 +11,12 @@ obj/assigment4_ex1_and_2.o obj/assigment4_ex1_and_2.dep : src/assigment4_ex1_and
  src/impl/../rt/../rt/texture_basics.h \
  src/impl/../rt/../rt/../core/image.h src/impl/../rt/../core/image.h \
  src/impl/phong_shaders.h src/impl/../core/perlin.h \
- src/impl/../core/../core/array2.h src/impl/basic_primitives.h \
+ src/impl/../core/../core/array2.h src/impl/../core/memory.h \
+ src/impl/../rt/noise_textures.h src/impl/../rt/../core/perlin.h \
+ src/impl/../rt/../core/algebra.h src/impl/basic_primitives.h \
  src/core/algebra.h src/core/util.h src/core/../core/algebra.h \
  src/rt/basic_definitions.h src/impl/phong_shaders.h \
  src/impl/perspective_camera.h src/impl/integrator.h src/rt/renderer.h \
  src/rt/../core/image.h src/rt/basic_definitions.h src/impl/samplers.h \
  src/impl/../rt/renderer.h src/impl/fractallandscape.h \
- src/impl/../core/array2.h
+ src/impl/../core/array2.h src/rt/noise_textures.h

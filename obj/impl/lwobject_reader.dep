@@ -11,4 +11,6 @@ obj/impl/lwobject_reader.o obj/impl/lwobject_reader.dep : src/impl/lwobject_read
  src/impl/../rt/../rt/../core/algebra.h \
  src/impl/../rt/../rt/../core/memory.h src/impl/../rt/../core/image.h \
  src/impl/phong_shaders.h src/impl/../core/perlin.h \
- src/impl/../core/../core/array2.h
+ src/impl/../core/../core/array2.h src/impl/../core/memory.h \
+ src/impl/../rt/noise_textures.h src/impl/../rt/../core/perlin.h \
+ src/impl/../rt/../core/algebra.h

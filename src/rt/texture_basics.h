@@ -102,11 +102,14 @@ public:
 
 		return float2(c2[0] - c0[0], c1[0] - c3[0]);
 	}
-	float width() const {}
-	float height() const {}
+	virtual float width() const {
+		
+		
+	}
+	virtual float height() const {}
 protected:
 	//Correct the sampling address to be inside the texture
-	static void fixAddress(float &_addr, float _max, TextureAddressMode _tam)
+	void fixAddress(float &_addr, float _max, TextureAddressMode _tam) const
 	{
 		if(_tam == TAM_Wrap) 
 			_addr = fmodf(_addr, _max);
@@ -117,7 +120,7 @@ protected:
 	//Lookup a texel using poin sampling. Coordinates are
 	//	denormalized and texel center is at (0, 0) of image
 	//	pixel's center
-	float4 lookupTexel(float _x, float _y) const
+	virtual float4 lookupTexel(float _x, float _y) const
 	{
 		
 	}

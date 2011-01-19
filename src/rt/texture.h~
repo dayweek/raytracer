@@ -13,8 +13,15 @@ class Texture : public TextureBase
 
 public:
 	SmartPtr<Image> image;
+	Texture()
+	{
+		addressModeX = TAM_Wrap;
+		addressModeY = TAM_Wrap;
+		filterMode = TFM_Point;
+	}
 private:
-	float4 lookupTexel(float _x, float _y) const
+
+	virtual lookupTexel(float _x, float _y) const
 	{
 		float realX = _x, realY = _y;
 		fixAddress(realX, width(), addressModeX);
@@ -25,11 +32,11 @@ private:
 		
 		return (*image)(x, y);
 	}
-	float width() 
+	virtual width() const
 	{
 		return (float)image->width();
 	}
-	float height()
+	virtual height() const
 	{
 		return (float)image->height();
 	}
