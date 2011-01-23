@@ -341,6 +341,11 @@ struct Matrix
 			t[i] = n*v[i];
 		return Matrix(t);
 	}
+	
+	Vector operator* (const Vector& _v) const
+	{
+		return (_v[0] * v[0]) + (_v[1] * v[1]) + (_v[2] * v[2]);
+	}
 
 	Matrix operator* (const Matrix& m) const
 	{

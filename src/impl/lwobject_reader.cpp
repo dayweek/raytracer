@@ -137,6 +137,7 @@ namespace objLoaderUtil
 			else if(
 				_strnicmp(cmd,  "map_Kd", 6) == 0 || _strnicmp(cmd,  "map_Ks", 6) == 0
 				|| _strnicmp(cmd,  "map_Ka", 6) == 0 || _strnicmp(cmd,  "map_bump", 7) == 0
+				|| _strnicmp(cmd,  "bump", 4) == 0
 				)
 			{
 				SmartPtr<Texture> &dest = 
@@ -146,8 +147,11 @@ namespace objLoaderUtil
 					_matVector[curMtl].bumpTexture));
 
 
-				bool bumpTex = _strnicmp(cmd,  "map_bump", 8) == 0;
-				cmd += 6;
+				bool bumpTex = _strnicmp(cmd,  "map_bump", 8) == 0 || _strnicmp(cmd,  "bump", 4) == 0;
+				if(_strnicmp(cmd,  "bump", 4) == 0)
+					cmd += 2;
+				else
+					cmd += 6;
 
 				if(bumpTex)
 				{
@@ -427,6 +431,7 @@ parse_err_found:
 			it->shader = shader;
 			if((it->bumpTexture).data() != NULL) {
 				shader->bumpTexture = it->bumpTexture;
+				shader->bumpIntensity = it->bumpIntensity;
 			}
 			shader->diffuseCoef = it->diffuseCoeff;
 			shader->ambientCoef = it->ambientCoeff;

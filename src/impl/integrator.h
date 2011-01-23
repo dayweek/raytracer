@@ -3,6 +3,8 @@
 #ifdef _MSC_VER
 	#pragma once
 #endif
+#include "../impl/phong_shaders.h"
+#include <limits>
 
 struct PointLightSource
 {
@@ -43,7 +45,7 @@ public:
 			Primitive::IntRet ret = scene->intersect(_ray, FLT_MAX);
 			if(ret.distance < FLT_MAX && ret.distance >= Primitive::INTEPS())
 			{
-				SmartPtr<Shader> shader = scene->getShader(ret);
+				SmartPtr<PluggableShader> shader = scene->getShader(ret);
 				if(shader.data() != NULL)
 				{
 					col += shader->getAmbientCoefficient() * ambientLight;
@@ -51,16 +53,21 @@ public:
 					Point intPt = _ray.o + ret.distance * _ray.d;
 
 					for(std::vector<PointLightSource>::const_iterator it = lightSources.begin(); it != lightSources.end(); it++)
-						if(visibleLS(intPt, it->position))
-						{
-							Vector lightD = it->position - intPt;
-							float4 refl = shader->getReflectance(-_ray.d, lightD);
-							float dist = lightD.len();
-							float fallOff = it->falloff.x / (dist * dist) + it->falloff.y / dist + it->falloff.z;
-							col += refl * float4::rep(fallOff) * it->intensity;
-						}
+					{
+						float4 trans = getTotalTransparency(intPt, it->position, shader->transparency);
+// 						Ray ray2;
+// 						ray2.o = intPt;
+// 						ray2.d = ~(it->position - intPt);
+// 						ret = scene->intersect(ray2,FLT_MAX);
+// 						ret.distance;
+						Vector lightD = it->position - intPt;
+						float4 refl = shader->getReflectance(-_ray.d, lightD);
+						float dist = lightD.len();
+// 						float fallOff = it->falloff.x / (dist * dist) + it->falloff.y / dist + it->falloff.z;
+						col +=  refl * float4::rep(1.0) * it->intensity;
+					}
 
-						col += shader->getIndirectRadiance(-_ray.d, this);
+					col += shader->getIndirectRadiance(-_ray.d, this);
 				}
 			}
 		}
@@ -69,17 +76,37 @@ public:
 
 		return col;
 	}
-private:
 
-	bool visibleLS(const Point& _pt, const Point& _pls)
+	virtual float4 getTotalTransparency(const Point& _pt, const Point& _pls, float4 initial_transparency)
 	{
-        Ray r;
-        r.d = _pls - _pt;
-        r.o = _pt + Primitive::INTEPS() * r.d;
-
-        Primitive::IntRet ret = scene->intersect(r, 1.1f);
-        return ret.distance >= 1 - Primitive::INTEPS();
+		Ray r;
+		float4 t = initial_transparency;
+		r.d = ~(_pls - _pt);
+		float total_distance = (_pt - _pls).len();
+		float distance = Primitive::INTEPS();
+		Point pt = _pt;
+		Primitive::IntRet ret;
+		while (distance < total_distance)
+			{			
+				
+				ret = scene->intersect(r, FLT_MAX);
+				if(ret.distance < std::numeric_limits<float>::max() && ret.distance > Primitive::INTEPS()) {
+					distance += ret.distance + Primitive::INTEPS();
+					if(distance < total_distance) {
+						SmartPtr<PluggableShader> p = scene->getShader(ret);
+						t *= p->transparency;
+					}
+					else
+						distance = total_distance;
+				}
+				else
+					distance = total_distance;
+				r.o = _pt + distance * r.d;
+				
+			}
+		return t;
 	}
+
 
 };
 

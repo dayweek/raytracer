@@ -8,6 +8,7 @@
 #include "../core/bbox.h"
 #include "../core/memory.h"
 #include "../core/state.h"
+#include <limits>
 
 
 //This is the basic class for a camera, used to get a primary ray for a pixel
@@ -58,7 +59,11 @@ public:
 		//The distance to the intersection
 		float distance;
 		
-		IntRet() : distance(FLT_MAX){}
+		IntRet()
+		{
+			distance = FLT_MAX;
+			1;
+		}
 	};
 
 	//This function creates a shader for the intersection point 

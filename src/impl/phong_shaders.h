@@ -27,7 +27,7 @@ class PhongShaderBase : public PluggableShader
 public:
 
 	virtual void getCoeff(float4 &_diffuseCoef, float4 &_specularCoef, float &_specularExponent) const = 0;
-	virtual Vector getNormal() const = 0;
+
 
 	virtual float4 getReflectance(const Vector &_outDir, const Vector &_inDir) const
 	{
@@ -52,8 +52,7 @@ public:
 //The default phong shader
 class DefaultPhongShader : public PhongShaderBase
 {
-protected:
-	Vector m_normal; //Stored normalized
+
 
 public:
 	float4 diffuseCoef; 
@@ -70,8 +69,8 @@ public:
 		_specularExponent = specularExponent;
 	}
 
-	virtual Vector getNormal() const { return m_normal;}
-	virtual void setNormal(const Vector& _normal) { m_normal = ~_normal;}
+
+
 
 	_IMPLEMENT_CLONE(DefaultPhongShader);
 
@@ -122,6 +121,7 @@ class BumpTexturePhongShader : public TexturedPhongShader
 public:
 	SmartPtr<Texture> bumpTexture;
 	Vector pu, pv;
+	float bumpIntensity;
 	virtual Vector getNormal() const 
 	{ 
 		Vector ret = m_normal;
@@ -130,11 +130,16 @@ public:
 			// we modify the normal with respect to the bumpTexture
 			
 // 			std::cout << 1 << " " <<  m_texCoord.x << " " << m_texCoord.y << std::endl;
-			Vector a = pu % m_normal;
-			Vector b = pv % m_normal;
-			
 			float2 der = bumpTexture->derivatives(m_texCoord);
-			return ~(m_normal + (der.x * a - der.y * b));
+			Vector a = m_normal % -pu;
+			Vector b = m_normal % -pv;
+			
+// 			Vector b1 = bumpTexture->bumpVector1(m_texCoord);
+// 			Vector b2 = bumpTexture->bumpVector2(m_texCoord);
+			
+
+			return -~(m_normal + (der.x * a - der.y * b));
+// 			return ~(a % b);
 		}
 		return ret;
 	}
@@ -153,8 +158,8 @@ public:
 		Matrix wor(vec);
 		
 		Matrix pupv = wor * m;
-		pu = pupv.v[0];
-		pu = pupv.v[1];
+		pu =-~(pupv.v[0]);
+		pv = ~(pupv.v[1]);
 	}		
 	_IMPLEMENT_CLONE(BumpTexturePhongShader);
 };
@@ -213,7 +218,7 @@ public:
 // 				_integrator->count = 6;
 // 			}
 			_integrator->addContribution(float4::rep(1.0f) - reflCoef);
-			color = color + ((float4::rep(1.0f) - reflCoef) * _integrator->getRadiance(newray));
+			color = color + transparency * ((float4::rep(1.0f) - reflCoef) * _integrator->getRadiance(newray));
 			_integrator->removeContribution(float4::rep(1.0f) - reflCoef);
 		}
 		return color;

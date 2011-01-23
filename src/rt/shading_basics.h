@@ -33,6 +33,11 @@ struct Shader : RefCntBase
 //	independent shaders.
 struct PluggableShader : public Shader
 {
+protected:
+	Vector m_normal; //Stored normalized
+public:
+	float4 transparency;
+	PluggableShader(): transparency(float4::rep(0.0f)) {};
 	//Creates a copy of the shader. Cloning is necessary to guarantee
 	//	that shaders remain immutable in recursive or multi-threaded
 	//	integration. The integrator usually keeps a copy of the shader, which should
@@ -43,7 +48,10 @@ struct PluggableShader : public Shader
 	//Sets the surface point which is shaded
 	virtual void setPosition(const Point& _point) {};
 	//Sets the normal to the surface point which is shaded
-	virtual void setNormal(const Vector& _normal) {};
+	virtual void setNormal(const Vector& _normal) { m_normal = ~_normal;}
+	//We need normal to determine the direction of the surface for transparency
+	virtual Vector getNormal() const { return m_normal;}
+
 	
 	//Sets the texture coordinates for the intersection
 	virtual void setTextureCoord(const float2& _texCoord) {};

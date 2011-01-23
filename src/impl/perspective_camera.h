@@ -13,7 +13,7 @@ class PerspectiveCamera : public Camera
 	Point m_center;
 	Vector m_topLeft;
 	Vector m_stepX, m_stepY;
-	
+protected:	
 	void init(const Point &_center, const Vector &_forward, const Vector &_up, 
 		float _vertOpeningAngInGrad, std::pair<uint, uint> _resolution)
 	{
@@ -48,6 +48,7 @@ public:
 		init(_center, _lookAt - _center, _up, _vertOpeningAngInGrad, _resolution);
 	}
 
+
 	virtual Ray getPrimaryRay(float _x, float _y)
 	{
 		Ray ret;
@@ -57,6 +58,5 @@ public:
 		return ret;
 	}
 };
-
 
 #endif //__INCLUDE_GUARD_8B7841BB_FFCF_42B9_BF24_2CD457380EAB

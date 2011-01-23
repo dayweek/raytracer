@@ -17,11 +17,11 @@ public:
 	{
 		addressModeX = TAM_Wrap;
 		addressModeY = TAM_Wrap;
-		filterMode = TFM_Point;
+		filterMode = TFM_Bilinear;
 	}
 private:
 
-	virtual lookupTexel(float _x, float _y) const
+	virtual float4 lookupTexel(float _x, float _y) const
 	{
 		float realX = _x, realY = _y;
 		fixAddress(realX, width(), addressModeX);
@@ -32,11 +32,11 @@ private:
 		
 		return (*image)(x, y);
 	}
-	virtual width() const
+	virtual float width() const
 	{
 		return (float)image->width();
 	}
-	virtual height() const
+	virtual float height() const
 	{
 		return (float)image->height();
 	}

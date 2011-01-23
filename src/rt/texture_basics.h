@@ -93,14 +93,45 @@ public:
 	{
 		// bilinear transformation
 
-		float2 pos = _pos * float2(width(), height())
-			+ float2(_TEXEL_CENTER_OFFS, _TEXEL_CENTER_OFFS);
+		float2 pos = _pos * float2(width(), height());
+		pos.x = floor(pos.x);
+		pos.y = floor(pos.y);
+		pos += float2(_TEXEL_CENTER_OFFS, _TEXEL_CENTER_OFFS);
 		float4 c0 = lookupTexel(pos.x, pos.y);
 		float4 c1 = lookupTexel(pos.x + 1.0, pos.y);
 		float4 c2 = lookupTexel(pos.x, pos.y + 1.0);
-		float4 c3 = lookupTexel(pos.x + 1.0, pos.y + 1.0);
 
-		return float2(c2[0] - c0[0], c1[0] - c3[0]);
+		return float2(c1[0] - c0[0], c2[0] - c0[0]);
+	}
+	
+	Vector bumpVector1(const float2& _pos) const
+	{
+		// bilinear transformation
+
+		float2 pos = _pos * float2(width(), height());
+		pos.x = floor(pos.x);
+		pos.y = floor(pos.y);
+		pos += float2(_TEXEL_CENTER_OFFS, _TEXEL_CENTER_OFFS);
+		float4 c0 = lookupTexel(pos.x, pos.y);
+		float4 c1 = lookupTexel(pos.x + 1.0, pos.y);
+		float4 c2 = lookupTexel(pos.x, pos.y + 1.0);
+
+		return Vector(1, 0, c1[0] - c0[0]);
+	}
+	
+	Vector bumpVector2(const float2& _pos) const
+	{
+		// bilinear transformation
+
+		float2 pos = _pos * float2(width(), height());
+		pos.x = floor(pos.x);
+		pos.y = floor(pos.y);
+		pos += float2(_TEXEL_CENTER_OFFS, _TEXEL_CENTER_OFFS);
+		float4 c0 = lookupTexel(pos.x, pos.y);
+		float4 c1 = lookupTexel(pos.x + 1.0, pos.y);
+		float4 c2 = lookupTexel(pos.x, pos.y + 1.0);
+
+		return Vector(0, 1, c2[0] - c0[0]);
 	}
 	virtual float width() const {
 		
@@ -109,10 +140,12 @@ public:
 	virtual float height() const {}
 protected:
 	//Correct the sampling address to be inside the texture
-	void fixAddress(float &_addr, float _max, TextureAddressMode _tam) const
+	virtual void fixAddress(float &_addr, float _max, TextureAddressMode _tam) const
 	{
 		if(_tam == TAM_Wrap) 
 			_addr = fmodf(_addr, _max);
+			if(_addr < 0.0)
+				_addr = _max + _addr;
 		else if(_tam == TAM_Border) 
 			_addr = std::min(std::max(_addr, 0.f), _max);
 	}

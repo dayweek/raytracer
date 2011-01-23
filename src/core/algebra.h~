@@ -174,7 +174,7 @@ struct float4
 	
 	//A replication function. You can use float4::rep(4.f) as a shortcut to float4(4.f, 4.f, 4.f, 4.f)
 	_DEF_REP4;
-	float multi(const float& v)
+	float4 multi(const float& v)
 	{
 		return float4(x * v, y * v, z * v,  w * v);
 	}
@@ -318,6 +318,78 @@ struct Vector
 	const Vector operator ~() const
 	{
 		return *this / len();
+	}
+};
+
+// Matrix 
+
+struct Matrix
+{
+	Vector v[3];
+
+	Matrix(const Vector *a)
+	{
+		v[0] = a[0];
+		v[1] = a[1];
+		v[2] = a[2];
+	}
+	
+	Matrix operator* (const float& n) const
+	{
+		Vector t[3];
+		for(int i = 0; i < 3; i++)
+			t[i] = n*v[i];
+		return Matrix(t);
+	}
+	
+	Matrix operator* (const Vector& _v) const
+	{
+		return (_v[0] * v[0]) + (_v[1] * v[1]) + (_v[2] * v[2]);
+	}
+
+	Matrix operator* (const Matrix& m) const
+	{
+		Vector ret[3];
+		Matrix mt(v);
+		mt = mt.trans();
+		for(int i = 0; i < 3; i++)
+			for(int ii = 0; ii < 3; ii++)
+				ret[ii][i] = mt.v[i] * m.v[ii];
+		return Matrix(ret);
+	}
+	
+	Matrix trans()
+	{
+		Vector t[3];
+		for(int i = 0; i < 3; i++)
+			for(int ii = 0; ii < 3; ii++)
+				t[i][ii] = v[ii][i];
+		return Matrix(t);
+	}
+
+	const float det() const
+	{
+		return v[0] * (v[1] % v[2]);
+	}
+	// http://en.wikipedia.org/wiki/Matrix_inversion#Methods_of_matrix_inversion
+	Matrix inverse() 
+	{
+			Vector t[3];
+			t[0] = v[1] % v[2];
+			t[1] = v[2] % v[0];
+			t[2] = v[0] % v[1];
+			Matrix m(t);
+			return m.trans() * (1.0f/det());
+	}
+	
+	void print() 
+	{
+		for(int i = 0; i < 3; i++) {
+			for(int ii = 0; ii < 3; ii++) {
+				std::cout << v[ii][i] << " ";
+			}
+			std::cout << std::endl;
+		}
 	}
 };
 

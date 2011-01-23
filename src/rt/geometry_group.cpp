@@ -13,7 +13,7 @@ SmartPtr<Shader> GeometryGroup::getShader(IntRet _intData) const
 Primitive::IntRet GeometryGroup::intersect(const Ray& _ray, float _previousBestDistance) const
 {
 	IntRet bestRet;
-    bestRet.distance = _previousBestDistance;
+	bestRet.distance = _previousBestDistance;
 
 	Primitive *bestPrimitive = NULL;
 	//Find closest primitive
@@ -43,13 +43,14 @@ Primitive::IntRet GeometryGroup::intersect(const Ray& _ray, float _previousBestD
 	hp->innerPrimitive = bestPrimitive;
 	bestRet.hitInfo = hp;
 
-	volatile Primitive::IntRet pp = bestRet;
+// 	volatile Primitive::IntRet pp = bestRet;
 
 	return bestRet;
 }
 
 BBox GeometryGroup::getBBox() const
 {
+	IntRet ret;
 	if(m_nonIdxPrimitives.size() > 0)
 		return BBox::empty();
 	else
