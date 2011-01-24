@@ -3,16 +3,14 @@
 
 #include "stdafx.h"
 
-void assigment4_1_and_2();
-void assigment4_ex3();
+void setup_and_render();
 
 int main(int argc, char* argv[])
 {
 	//try
 	{
 		srand((unsigned)time(0));
-		assigment4_1_and_2();
-		//assigment4_ex3();
+		setup_and_render();
 	}
 	/*catch (const std::exception &_ex)
 	{

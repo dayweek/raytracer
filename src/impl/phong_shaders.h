@@ -131,14 +131,14 @@ public:
 			
 // 			std::cout << 1 << " " <<  m_texCoord.x << " " << m_texCoord.y << std::endl;
 			float2 der = bumpTexture->derivatives(m_texCoord);
-			Vector a = m_normal % -pu;
-			Vector b = m_normal % -pv;
+			Vector a = m_normal % pu;
+			Vector b = m_normal % pv;
 			
 // 			Vector b1 = bumpTexture->bumpVector1(m_texCoord);
 // 			Vector b2 = bumpTexture->bumpVector2(m_texCoord);
 			
 
-			return -~(m_normal + (der.x * a - der.y * b));
+			return ~(m_normal + (der.x * a - der.y * b));
 // 			return ~(a % b);
 		}
 		return ret;

@@ -321,12 +321,16 @@ struct Vector
 	}
 };
 
-// Matrix 
+/* Simple 3x3 matrix class
+ * column vectors are stored in v member variable
+ */
 
 struct Matrix
 {
+	// 3 column vectors
 	Vector v[3];
-
+	
+	// we need an array of vectors
 	Matrix(const Vector *a)
 	{
 		v[0] = a[0];
@@ -334,6 +338,7 @@ struct Matrix
 		v[2] = a[2];
 	}
 	
+	// multiplication by scalar value
 	Matrix operator* (const float& n) const
 	{
 		Vector t[3];
@@ -342,11 +347,13 @@ struct Matrix
 		return Matrix(t);
 	}
 	
+	// multiplication by vector
 	Vector operator* (const Vector& _v) const
 	{
 		return (_v[0] * v[0]) + (_v[1] * v[1]) + (_v[2] * v[2]);
 	}
 
+	// multiplication by another matrix 3x3
 	Matrix operator* (const Matrix& m) const
 	{
 		Vector ret[3];
@@ -358,6 +365,7 @@ struct Matrix
 		return Matrix(ret);
 	}
 	
+	// transpose matrix
 	Matrix trans()
 	{
 		Vector t[3];
@@ -367,10 +375,13 @@ struct Matrix
 		return Matrix(t);
 	}
 
+	// determinant 
 	const float det() const
 	{
 		return v[0] * (v[1] % v[2]);
 	}
+	
+	// inverse matrix
 	// http://en.wikipedia.org/wiki/Matrix_inversion#Methods_of_matrix_inversion
 	Matrix inverse() 
 	{
@@ -382,6 +393,7 @@ struct Matrix
 			return m.trans() * (1.0f/det());
 	}
 	
+	// for debugging, it prints content of the matrix
 	void print() 
 	{
 		for(int i = 0; i < 3; i++) {

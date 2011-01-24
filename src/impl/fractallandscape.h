@@ -91,7 +91,6 @@ protected:
 		for(uint y = 0; y < number_of_vertices_in_one_axis; y++) 
 			for(uint x = 0; x < number_of_vertices_in_one_axis; x++) {
 				heights(x, y) = h;
-				heightsSet(x,y) = 0;
 			}
 	}
 	

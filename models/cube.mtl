@@ -13,17 +13,17 @@ Ns 50.781250
 illum 2
 Kd 0.800000 0.800000 0.800000
 
-newmtl Sky
-Ns 50.781250
-illum 2
-Kd 0.800000 0.800000 0.800000
-map_Kd stones_spec.png
-
-newmtl default_Mat
-illum 2
-Kd 0.800000 0.800000 0.800000
-
 newmtl Grad
 illum 2
 Kd 0.800000 0.800000 0.800000
 bump gradient.png
+
+newmtl Bump
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd stones_diffuse.png
+bump stones_bump.png
+
+newmtl default_Mat
+illum 2
+Kd 0.800000 0.800000 0.800000

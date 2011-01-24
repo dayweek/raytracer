@@ -42,11 +42,9 @@ public:
 			std::vector<Sampler::Sample> samples;
 #pragma omp for schedule(dynamic, 10)
 			for(int y = 0; y < (int)target->height(); y++) {
-
+				std::cout << y << std::endl;
 				for(int x = 0; x < (int)target->width(); x++)
 				{
-				std::cout << y << std::endl;
-				std::cout << x << std::endl;
 					float4 color = float4::rep(0.f);
 
 					samples.clear();
