@@ -1,2 +1,1 @@
 obj/main.o obj/main.dep : src/main.cpp src/stdafx.h
-main.o obj/main.dep : src/main.cpp src/stdafx.h

@@ -120,8 +120,12 @@ class BumpTexturePhongShader : public TexturedPhongShader
 {
 public:
 	SmartPtr<Texture> bumpTexture;
+	//vectors (1,0) and (0,1) converted from texture space to object space
 	Vector pu, pv;
+	// to change intensity of bumps. it's not used yet.
 	float bumpIntensity;
+	
+	// returns normal that is derived from bump map and transformed to object space
 	virtual Vector getNormal() const 
 	{ 
 		Vector ret = m_normal;
@@ -129,37 +133,43 @@ public:
 		{
 			// we modify the normal with respect to the bumpTexture
 			
-// 			std::cout << 1 << " " <<  m_texCoord.x << " " << m_texCoord.y << std::endl;
 			float2 der = bumpTexture->derivatives(m_texCoord);
-			Vector a = m_normal % pu;
-			Vector b = m_normal % pv;
 			
-// 			Vector b1 = bumpTexture->bumpVector1(m_texCoord);
-// 			Vector b2 = bumpTexture->bumpVector2(m_texCoord);
-			
+			// perturbate vectors converted from texture space
+			Vector a = der.x * m_normal + pu;
+			Vector b = der.y * m_normal + pv;
 
-			return ~(m_normal + (der.x * a - der.y * b));
-// 			return ~(a % b);
+			// return perpendicular vector
+			return ~(a % b);
 		}
 		return ret;
 	}
+	
+	// convert vectors (1,0) and (0,1) from texture space to object space
+	// than they can be perturbated
+	// details: http://www.irstamek.com/iWeb/Papers/bump-eng.pdf
+	// basically we construct a matrix M that performs trasformatino from texture space T to object space V
+	// M * T = V
+	// M = V * T^(-1)
+	// two first columns of M are the desired vectors
 	virtual void setPuPv(Point x, Point y, Point z, float2 u, float2 v, float2 w)
 	{ 
 		Vector vec[3];
 		vec[0] = Vector(u.x, u.y, 1.0f);
 		vec[1] = Vector(v.x, v.y, 1.0f);
 		vec[2] = Vector(w.x, w.y, 1.0f);
-		Matrix m(vec);
-		m = m.inverse();
+		Matrix t_matrix(vec);
+		t_matrix = t_matrix.inverse();
 		
 		vec[0] = Vector(x[0], x[1], x[2]);
 		vec[1] = Vector(y[0], y[1], y[2]);
 		vec[2] = Vector(z[0], z[1], z[2]);
-		Matrix wor(vec);
+		Matrix v_matrix(vec);
 		
-		Matrix pupv = wor * m;
-		pu =-~(pupv.v[0]);
-		pv = ~(pupv.v[1]);
+		Matrix m_matrix = v_matrix * t_matrix;
+		
+		pu = ~(m_matrix.v[0]);
+		pv = ~(m_matrix.v[1]);
 	}		
 	_IMPLEMENT_CLONE(BumpTexturePhongShader);
 };
@@ -235,6 +245,7 @@ public:
 class ProceduralPhongShader : public TexturedPhongShader
 {
 public:
+	//noise textures have same access method as Texture
 	SmartPtr<TextureBase> diffNoiseTexture;
 	SmartPtr<TextureBase> amibientNoiseTexture;
 	SmartPtr<TextureBase> specNoiseTexture;
@@ -242,8 +253,10 @@ public:
 
 	virtual float4 getAmbientCoefficient() const 
 	{ 
+		// first we ask ancestor for the coeficient
 		float4 ret = TexturedPhongShader::getAmbientCoefficient();
-
+		
+		// then we maybe overide it
 		if(amibientNoiseTexture.data() != NULL)
 			ret = amibientNoiseTexture->sample(m_texCoord);
 

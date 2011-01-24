@@ -9,7 +9,9 @@ int main(int argc, char* argv[])
 {
 	//try
 	{
+		// random generator initialization
 		srand((unsigned)time(0));
+		
 		setup_and_render();
 	}
 	/*catch (const std::exception &_ex)

@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 
-void setupAndRender();
+void setup_and_render();
 
 int main(int argc, char* argv[])
 {

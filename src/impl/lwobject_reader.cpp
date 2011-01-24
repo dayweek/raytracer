@@ -139,6 +139,9 @@ namespace objLoaderUtil
 				|| _strnicmp(cmd,  "map_Ka", 6) == 0 || _strnicmp(cmd,  "map_bump", 7) == 0
 				|| _strnicmp(cmd,  "bump", 4) == 0
 				)
+				// cinema 4d exports 'bump', not 'map_bump' also the standard at 
+				// http://local.wasp.uwa.edu.au/~pbourke/dataformats/mtl/ says 
+				// only 'bump' is allowed for the bump texture
 			{
 				SmartPtr<Texture> &dest = 
 					(_strnicmp(cmd, "map_Kd", 6) == 0) ?  _matVector[curMtl].diffuseTexture : 
@@ -149,6 +152,7 @@ namespace objLoaderUtil
 
 				bool bumpTex = _strnicmp(cmd,  "map_bump", 8) == 0 || _strnicmp(cmd,  "bump", 4) == 0;
 				if(_strnicmp(cmd,  "bump", 4) == 0)
+					// cinema 4d exports 'bump', not 'map_bump'
 					cmd += 2;
 				else
 					cmd += 6;

@@ -54,17 +54,13 @@ public:
 
 					for(std::vector<PointLightSource>::const_iterator it = lightSources.begin(); it != lightSources.end(); it++)
 					{
-						float4 trans = getTotalTransparency(intPt, it->position, shader->transparency);
-// 						Ray ray2;
-// 						ray2.o = intPt;
-// 						ray2.d = ~(it->position - intPt);
-// 						ret = scene->intersect(ray2,FLT_MAX);
-// 						ret.distance;
+// 						float4 trans = getTotalTransparency(intPt, it->position, shader->transparency);
+
 						Vector lightD = it->position - intPt;
 						float4 refl = shader->getReflectance(-_ray.d, lightD);
 						float dist = lightD.len();
-// 						float fallOff = it->falloff.x / (dist * dist) + it->falloff.y / dist + it->falloff.z;
-						col +=  refl * float4::rep(1.0) * it->intensity;
+						float fallOff = it->falloff.x / (dist * dist) + it->falloff.y / dist + it->falloff.z;
+						col +=  refl * float4::rep(fallOff) * it->intensity;
 					}
 
 					col += shader->getIndirectRadiance(-_ray.d, this);

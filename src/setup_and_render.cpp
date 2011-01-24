@@ -57,7 +57,7 @@ Vector forwardForCamera(float angleX)
 
 void setup_and_render()
 {
-	Image img(800, 600);
+	Image img(1200, 800);
 	img.addRef();
 
 	//Set up the scene
@@ -72,7 +72,7 @@ void setup_and_render()
 	//apply custom shaders
 	DefaultPhongShader as;
 	as.addRef();
-	as.diffuseCoef = float4(0.2f, 0.2f, 0.4f, 0);
+	as.diffuseCoef = float4(118.0f/250.0f, 92.0f/250.0f, 63.0f/250.0f, 0);
 	as.ambientCoef = as.diffuseCoef;
 	as.specularCoef = float4::rep(0);
 	as.specularExponent = 10000.f;
@@ -128,7 +128,7 @@ void setup_and_render()
 
 	PointLightSource pls3;
 
-	pls3.falloff = float4(1, 0, 0, 0);
+	pls3.falloff = float4(0, 0, 1, 0);
 
 	pls3.intensity  = float4::rep(0.9f);
 	pls3.position = Point(-234, 586,395);

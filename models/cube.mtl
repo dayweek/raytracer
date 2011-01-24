@@ -19,11 +19,21 @@ Kd 0.800000 0.800000 0.800000
 bump gradient.png
 
 newmtl Bump
+Ns 50.781250
 illum 2
 Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
 map_Kd stones_diffuse.png
+map_Ks stones_spec.png
 bump stones_bump.png
 
-newmtl default_Mat
+newmtl Floor
+Ns 50.781250
+illum 2
+Kd 1.000000 0.063492 0.063492
+Ks 1.000000 1.000000 1.000000
+
+newmtl Sky
+Ns 50.781250
 illum 2
 Kd 0.800000 0.800000 0.800000
