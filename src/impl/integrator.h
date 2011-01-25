@@ -59,12 +59,14 @@ public:
 					{
 						//experimental feature
 // 						float4 trans = getTotalTransparency(intPt, it->position, shader->transparency);
-
-						Vector lightD = it->position - intPt;
-						float4 refl = shader->getReflectance(-_ray.d, lightD);
-						float dist = lightD.len();
-						float fallOff = it->falloff.x / (dist * dist) + it->falloff.y / dist + it->falloff.z;
-						col +=  refl * float4::rep(fallOff) * it->intensity;
+						if(visibleLS(intPt, it->position))
+						{
+							Vector lightD = it->position - intPt;
+							float4 refl = shader->getReflectance(-_ray.d, lightD);
+							float dist = lightD.len();
+							float fallOff = it->falloff.x / (dist * dist) + it->falloff.y / dist + it->falloff.z;
+							col +=  refl * float4::rep(fallOff) * it->intensity;
+						}
 					}
 
 					col += shader->getIndirectRadiance(-_ray.d, this);
@@ -76,8 +78,19 @@ public:
 
 		return col;
 	}
+private:
+	bool visibleLS(const Point& _pt, const Point& _pls)
+	{
+        Ray r;
+        r.d = _pls - _pt;
+        r.o = _pt + Primitive::INTEPS() * r.d;
 
-	virtual float4 getTotalTransparency(const Point& _pt, const Point& _pls, float4 initial_transparency)
+        Primitive::IntRet ret = scene->intersect(r, 1.1f);
+        return ret.distance >= 1 - Primitive::INTEPS();
+	}
+
+
+	float4 getTotalTransparency(const Point& _pt, const Point& _pls, float4 initial_transparency)
 	{
 		Ray r;
 		float4 t = initial_transparency;

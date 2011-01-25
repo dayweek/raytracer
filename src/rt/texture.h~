@@ -17,7 +17,7 @@ public:
 	{
 		addressModeX = TAM_Wrap;
 		addressModeY = TAM_Wrap;
-		filterMode = TFM_Bilinear;
+		filterMode = TFM_Point;
 	}
 private:
 

@@ -21,8 +21,8 @@ public:
 		// make clouds with certain size and density
 		virtual	float customize(float x, float y, float total) const
 		{
-			float density = 0.1f;
-			float coverage = -0.3f;
+			float density = 1.2f;
+			float coverage = -0.1f;
 			total = (total + coverage) * density;
 			if(total < 0.0)
 				total = 0.0;

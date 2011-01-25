@@ -8,20 +8,6 @@
 #  
 #  ==========================================================================
 
-newmtl Bump
-Ns 50.781250
-illum 2
-Kd 0.800000 0.800000 0.800000
-Ks 1.000000 1.000000 1.000000
-map_Kd stones_diffuse.png
-map_Ks stones_spec.png
-bump stones_bump.png
-
-newmtl Glass
-Ns 50.781250
-illum 2
-Kd 0.800000 0.800000 0.800000
-
 newmtl Marble
 Ns 50.781250
 illum 2
@@ -32,6 +18,21 @@ newmtl Sky
 Ns 50.781250
 illum 2
 Kd 0.800000 0.800000 0.800000
+map_Kd helper.png
+
+newmtl Ground
+illum 2
+Kd 0.800000 0.800000 0.800000
+map_Kd mat.png
+
+newmtl Bump
+Ns 50.781250
+illum 2
+Kd 0.800000 0.800000 0.800000
+Ks 1.000000 1.000000 1.000000
+map_Kd stones_diffuse.png
+map_Ks stones_spec.png
+bump stones_bump.png
 
 newmtl Floor
 Ns 50.781250

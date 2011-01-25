@@ -92,7 +92,7 @@ void setup_and_render()
 	as.specularCoef = float4::rep(0);
 	as.specularExponent = 10000.f;
 	as.transparency = float4::rep(0.9);
-	FractalLandscape f(Point(-5000,-11500,-540), Point(5000,-1500,-540),9, 0.1, &as, 0.1f);
+	FractalLandscape f(Point(-4419,-8000,-569), Point(3581,0, -569),9, 0.1, &as, 5.0f);
 	f.addReferencesToScene(scene.primitives);
 	scene.rebuildIndex();
 	
@@ -106,27 +106,23 @@ void setup_and_render()
 	glass.specularExponent = 10000;
 	glass.transparency = float4::rep(0.9);
 	glass.addRef();
-// 	Sphere sphere(Point(-2,4,3), 1, &sh);;
-// 	scene.primitives.push_back(&sphere);
-// 	scene.rebuildIndex();	
+	Sphere sphere(Point(-78,1318,40), 25, &glass);;
+	scene.primitives.push_back(&sphere);
+	scene.rebuildIndex();	
 	objects.materials[objects.materialMap["Glass"]].shader = &glass;
 
 	
 	//sample shader for noise
 	ProceduralPhongShader skyShader;
+	skyShader.addRef();
 	CloudTexture nt;
 	nt.addRef();
 	skyShader.amibientNoiseTexture = &nt;
-	skyShader.diffNoiseTexture = &nt;
-	skyShader.specularCoef = float4::rep(0.f);
-	skyShader.specularExponent = 10000.f;
-	skyShader.addRef();
+	skyShader.diffuseCoef = float4::rep(0.0f);
+	skyShader.specularCoef = float4::rep(0.0f);
+
 // 	float w = skyShader.amibientNoiseTexture->perlin->width;
  objects.materials[objects.materialMap["Sky"]].shader = &skyShader;
-	
- 	//Enable bi-linear filtering on the walls
-//	((BumpTexturePhongShader*)cow.materials[cow.materialMap["Stones"]].shader.data())->diffTexture->filterMode = Texture::TFM_Point;
-
 
 	//Set up the cameras
 	PerspectiveCamera cam1(Point(-23, 1483, 30 ), forwardForCamera((0.0)*PI/180.0), Vector(0, 0, 1), 45,
@@ -144,15 +140,24 @@ void setup_and_render()
 	pls3.falloff = float4(0, 0, 1, 0);
 
 	pls3.intensity  = float4::rep(0.9f);
-	pls3.position = Point(-234, 1880,395);
+	pls3.position = Point(299.5, 99, 518);
 	integrator.lightSources.push_back(pls3);
 
-	areaLightSource(integrator, 0.9, 3, Point(-250, -8400, 2000), 1500);
+// 	PointLightSource pls4;
+// 
+// 	pls4.falloff = float4(0, 0, 1, 0);
+// 
+// 	pls4.intensity  = float4::rep(0.9f);
+// 	pls4.position = Point(1289.5, 99, 518);
+// 	integrator.lightSources.push_back(pls4);
+	
+	areaLightSource(integrator, 0.9, 2, Point(-1180, -3860, -1718), 1000);
 	integrator.ambientLight = float4::rep(0.1f);
 
-	DefaultSampler samp;
+	StratifiedSampler samp;
 	samp.addRef();
-// 	samp.sampleCount = 16;
+ 	samp.samplesX = 3;
+	samp.samplesY = 3;
 
 	//Render
 	Renderer r;

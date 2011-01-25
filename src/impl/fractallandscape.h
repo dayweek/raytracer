@@ -10,6 +10,7 @@
 // limitation: mountain grows only in positive Z axis, textures are aligned with x and y coords
 // Note: when computing vertex normals on the edges, we assume that surface around
 //       the square has normal = (0,0,1)
+// Warning: textures are only experimantal. scaling somehow does not work
 
 class FractalLandscape
 {
@@ -114,8 +115,8 @@ protected:
 	{
 		for(uint y = 0; y < number_of_vertices_in_one_axis; y++) 
 			for(uint x = 0; x < number_of_vertices_in_one_axis; x++) {
-				textCoords(x, y) = float2(fmodf((x / (float) (number_of_vertices_in_one_axis - 1)),textureScale),
-						       fmodf((y / (float) (number_of_vertices_in_one_axis - 1)),textureScale));
+				textCoords(x, y) = float2((float(x) / (float) (number_of_vertices_in_one_axis - 1) *textureScale),
+						       (float(y) / (float) (number_of_vertices_in_one_axis - 1) *textureScale));
 
 			}
 	}
