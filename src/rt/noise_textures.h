@@ -11,20 +11,18 @@ class CloudTexture : public TextureBase
 {
 
 public:
-	
+	// class for generating clouds in grayscale
 	class CloudPerlin: public Perlin
 	{
 	public:
 		CloudPerlin(uint _width, float _persistence, int _n_octaves): Perlin(_width, _persistence, _n_octaves)
-		{
-
-		}
+		{}
+		
+		// make clouds with certain size and density
 		virtual	float customize(float x, float y, float total) const
 		{
-			//return 0.5 * (1.0 + sin(x + c*total));
-			//return sin(x +  total);
-			float density = 1.1f;
-			float coverage = -0.2f;
+			float density = 0.1f;
+			float coverage = -0.3f;
 			total = (total + coverage) * density;
 			if(total < 0.0)
 				total = 0.0;
@@ -41,16 +39,17 @@ public:
 		addressModeX = TAM_Wrap;
 		addressModeY = TAM_Wrap;
 		filterMode = TFM_Point;
-		perlin = new CloudPerlin(10, 0.5f, 6); 
+		perlin = new CloudPerlin(100, 0.6f, 6); 
 	}
 private:
-
+	// we get grayscale sample and convert it to white-blue to look like a clouds
 	virtual float4 lookupTexel(float _x, float _y) const
 	{
 		float realX = _x, realY = _y;
 		fixAddress(realX, width(), addressModeX);
 		fixAddress(realY, height(), addressModeY);
 		float perlinSample = perlin->sample(realX, realY);
+		
 		float blue = 0.99f;
 		float red = perlinSample;
 		float green = perlinSample / 2.0 + 0.5;
@@ -58,11 +57,11 @@ private:
 	}
 	virtual float width() const
 	{
-		return perlin->getWidth();
+		return (float)perlin->width;
 	}
 	virtual float height() const
 	{
-		return perlin->getWidth();
+		return (float)perlin->width;
 	}
 };
 

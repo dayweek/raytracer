@@ -11,30 +11,23 @@ SmartPtr<Shader> FractalLandscape::Face::getShader(IntRet _intData) const
 	shader->setPosition(Point::lerp(m_fractal->vertices(vert1x, vert1y), m_fractal->vertices(vert2x, vert2y), 
 		m_fractal->vertices(vert3x, vert3y), hit->intResult.x, hit->intResult.y));
 
-	float hh;
-	hh = m_fractal->vertices(vert3x, vert3y)[2];
 	
 	Vector norm = 
-		m_fractal->vertexNormals(norm1x, norm1y) * hit->intResult.x + 
-		m_fractal->vertexNormals(norm2x, norm2y) * hit->intResult.y + 
-		m_fractal->vertexNormals(norm3x, norm3y) * hit->intResult.z;
+		m_fractal->vertexNormals(vert1x, vert1y) * hit->intResult.x + 
+		m_fractal->vertexNormals(vert2x, vert2y) * hit->intResult.y + 
+		m_fractal->vertexNormals(vert3x, vert3y) * hit->intResult.z;
 	
  	shader->setNormal(norm);
 
-// 	if(tex1 != -1 && tex2 != -1 && tex3 != -1)
-// 	{
-// 		float2 texPos = 
-// 			m_fractal->texCoords[tex1] * hit->intResult.x +  
-// 			m_fractal->texCoords[tex2] * hit->intResult.y +  
-// 			m_fractal->texCoords[tex3] * hit->intResult.z;
-// 
-// 		shader->setTextureCoord(texPos);
-// 	}
 
-	
-	//set pu, pv for bump mapping
-// 	shader->setPuPv(m_fractal->vertices(vert1x, vert1y), m_fractal->vertices(vert2x, vert2y),m_fractal->vertices(vert3x, vert3y),
-// 			m_fractal->texCoords[tex1], m_fractal->texCoords[tex2], m_fractal->texCoords[tex3]);
+	float2 texPos = 
+		m_fractal->textCoords(vert1x, vert1y) * hit->intResult.x +  
+		m_fractal->textCoords(vert2x, vert2y) * hit->intResult.y +  
+		m_fractal->textCoords(vert3x, vert3y) * hit->intResult.z;
+
+	shader->setTextureCoord(texPos);
+
+
 	return shader;
 
 }

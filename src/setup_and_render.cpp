@@ -17,6 +17,14 @@
 // for rotating camera
 #define PI 3.14159265
 
+#ifndef WIDTH
+#define WIDTH 1280
+#endif
+
+#ifndef HEIGHT
+#define HEIGHT 960
+#endif
+
 // creates area light sourse in a square. coordinates of the lights have the same z coordinate.
 // density - how many lights. total number = density^2
 void areaLightSource(IntegratorImpl &_int, float intensity, int density, Point corner, float width)
@@ -35,7 +43,7 @@ void areaLightSource(IntegratorImpl &_int, float intensity, int density, Point c
 	float4 disintensity = float4::rep(intensity/(density * density));
 	for(int y = 1; y < density + 1; y++) {
 		for(int x = 1; x < density + 1; x++) {
-			pls.falloff = float4(1, 0, 0, 0);
+			pls.falloff = float4(0, 0, 1, 0);
 			pls.intensity  = disintensity;
 			pls.position = Point(xstart + x*xstep, ystart + y*ystep, corner[2]);
 			_int.lightSources.push_back(pls);
@@ -57,7 +65,8 @@ Vector forwardForCamera(float angleX)
 
 void setup_and_render()
 {
-	Image img(1200, 800);
+
+	Image img(WIDTH, HEIGHT);
 	img.addRef();
 
 	//Set up the scene
@@ -70,15 +79,20 @@ void setup_and_render()
 	scene.rebuildIndex();
 	
 	//apply custom shaders
-	DefaultPhongShader as;
+	BumpTexturePhongShader as;
 	as.addRef();
-	as.diffuseCoef = float4(118.0f/250.0f, 92.0f/250.0f, 63.0f/250.0f, 0);
-	as.ambientCoef = as.diffuseCoef;
+	Image  grass;
+	grass.addRef();
+	grass.readPNG("models/mat.png");
+	Texture textureGrass;
+	textureGrass.addRef();
+	textureGrass.image = &grass;
+	as.diffTexture = &textureGrass;
+	as.amibientTexture = &textureGrass;
 	as.specularCoef = float4::rep(0);
 	as.specularExponent = 10000.f;
 	as.transparency = float4::rep(0.9);
-	FractalLandscape f(Point(-5000,-11500,-540), Point(5000,-1500,-540),9, 0.1);
-	f.shader = &as;
+	FractalLandscape f(Point(-5000,-11500,-540), Point(5000,-1500,-540),9, 0.1, &as, 0.1f);
 	f.addReferencesToScene(scene.primitives);
 	scene.rebuildIndex();
 	
@@ -104,7 +118,7 @@ void setup_and_render()
 	nt.addRef();
 	skyShader.amibientNoiseTexture = &nt;
 	skyShader.diffNoiseTexture = &nt;
-	skyShader.specularCoef = float4::rep(1.0f);
+	skyShader.specularCoef = float4::rep(0.f);
 	skyShader.specularExponent = 10000.f;
 	skyShader.addRef();
 // 	float w = skyShader.amibientNoiseTexture->perlin->width;
@@ -115,7 +129,7 @@ void setup_and_render()
 
 
 	//Set up the cameras
-	PerspectiveCamera cam1(Point(-34, 1660,15 ), forwardForCamera((-6.0)*PI/180.0), Vector(0, 0, 1), 45,
+	PerspectiveCamera cam1(Point(-23, 1483, 30 ), forwardForCamera((0.0)*PI/180.0), Vector(0, 0, 1), 45,
 		std::make_pair(img.width(), img.height()));
 	
 	cam1.addRef();
@@ -125,16 +139,15 @@ void setup_and_render()
 	integrator.addRef();
 	integrator.scene = &scene;
 
-
 	PointLightSource pls3;
 
 	pls3.falloff = float4(0, 0, 1, 0);
 
 	pls3.intensity  = float4::rep(0.9f);
-	pls3.position = Point(-234, 586,395);
+	pls3.position = Point(-234, 1880,395);
 	integrator.lightSources.push_back(pls3);
 
-	areaLightSource(integrator, 0.9, 2, Point(-4300,-9900, 7200), 1500);
+	areaLightSource(integrator, 0.9, 3, Point(-250, -8400, 2000), 1500);
 	integrator.ambientLight = float4::rep(0.1f);
 
 	DefaultSampler samp;
@@ -149,7 +162,7 @@ void setup_and_render()
 
 	r.camera = &cam1;
 	r.render();
-	img.writePNG("result_cam1.png");
+	img.writePNG("result.png");
 	
 }
 

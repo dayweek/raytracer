@@ -5,19 +5,16 @@
 #include "memory.h"
 
 // 2D smoothed noise
+// to 2 mimic pseudo generating functions we save random values in an 2d array
+// to mimic frequency we adjust distance between samples
+// to mimic period we multiply the sample with a float
 class SmoothNoise
 {
-public:
+protected:
 	Array2<float> noise;
 
-	uint width;
-	SmoothNoise(uint _width)
-	{
-		// widht + 4
-		noise = Array2<float>(_width + 4);
-		width = _width;
-		generateRandoms();
-	}
+	uint width; //how many samples in both directions
+	
 	void generateRandoms()
 	{
 		for(int y = 0; y < width + 4; y++)
@@ -25,12 +22,23 @@ public:
 				noise(x, y) = normalizedRand();
 			}
 	}
-
+	
+	// generate float between -1 and 1
 	float normalizedRand() 
 	{
 		return (((rand() / (float)RAND_MAX)) * 2) - 1.0;	
 	}
+public:	
+	// constructor also generates random values
+	SmoothNoise(uint _width)
+	{
+		// we need 2 more samples on each side for smoothing
+		noise = Array2<float>(_width + 4);
+		width = _width;
+		generateRandoms();
+	}
 	
+	// we get smooth sample decreasing difference between neighbours 
 	float smoothedSample(uint x, uint y) const
 	{
 		x += 2;
@@ -48,51 +56,32 @@ public:
 
 class Perlin: public RefCntBase
 {
-public:
+private:
 	float persistence;
 	std::vector<SmoothNoise> noises;
 	int n_octaves;
+public:
 	uint width;
-	float c;
-	//constructor
+
+	// how many samplas we want - it grows quadratically
+	// persistence determines frequency and amplitude
+	// _n_octaves - how many functions we want to add
 	Perlin(uint _width, float _persistence, int _n_octaves) 
 	{
 		width = _width;
 		n_octaves = _n_octaves;
 		persistence = _persistence;
-		c = 5;
 		uint w = width;
+		// we generate n_octaves noises
 		for(int i = 1; i <= n_octaves; i++) {
 			noises.push_back(SmoothNoise(w));
 			w *= 2;
 		}
 		
 	}
-	float linearInterpolation(float fx, float fy, float fraction) const
-	{
-		return (1 - fraction) * fx + fraction * fy;
-	}
-	float interpolatedNoise(float fx, float fy, int noise_i) const
-	{
-		int x = (int)fx;
-		int y = (int)fy;
-		float fractionx = fx - x;
-		float fractiony = fy - y;
-		float l1 = linearInterpolation(noises[noise_i].smoothedSample(x, y), noises[noise_i].smoothedSample(x + 1, y), fractionx);
-		float l2 = linearInterpolation(noises[noise_i].smoothedSample(x, y + 1), noises[noise_i].smoothedSample(x + 1, y + 1), fractionx);
-		float li = linearInterpolation(l1, l2, fractiony);	
-		return li;
-	}
-	virtual float noise(float x, float y, float frequency, float amplitude, int noise_i) const
-	{
-		return (interpolatedNoise(x * frequency, y * frequency, noise_i)) * amplitude;
-	}
-	virtual	float customize(float x, float y, float total) const
-	{
-		//return 0.5 * (1.0 + sin(x + c*total));
-		//return sin(x +  total);
-		return (total + 1.0) / 2.0;
-	}
+	
+	// main method, for taking samples. we add functions
+	// of different frequencies and amplitudes
 	float sample(float x, float y) const
 	{
 		float frequency = 1;
@@ -105,9 +94,37 @@ public:
 		}
 		return customize(x, y, total);
 	}
-	float getWidth() const
+
+protected:
+
+	// just a wrapper, children could override it
+	virtual float noise(float x, float y, float frequency, float amplitude, int noise_i) const
 	{
-		return (float)width;
+		return (interpolatedNoise(x * frequency, y * frequency, noise_i)) * amplitude;
+	}
+	
+	// just a wrapper for changing noise before we return it, children could override it
+	virtual	float customize(float x, float y, float total) const
+	{
+		return (total + 1.0) / 2.0;
+	}
+	
+	float linearInterpolation(float fx, float fy, float fraction) const
+	{
+		return (1 - fraction) * fx + fraction * fy;
+	}
+	
+	// we take 4 samples around fx, fy and do bilinear interpolation
+	float interpolatedNoise(float fx, float fy, int noise_i) const
+	{
+		int x = (int)fx;
+		int y = (int)fy;
+		float fractionx = fx - x;
+		float fractiony = fy - y;
+		float l1 = linearInterpolation(noises[noise_i].smoothedSample(x, y), noises[noise_i].smoothedSample(x + 1, y), fractionx);
+		float l2 = linearInterpolation(noises[noise_i].smoothedSample(x, y + 1), noises[noise_i].smoothedSample(x + 1, y + 1), fractionx);
+		float li = linearInterpolation(l1, l2, fractiony);	
+		return li;
 	}
 };
 

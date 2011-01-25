@@ -22,7 +22,11 @@ struct DepthStateKey
 class IntegratorImpl : public Integrator
 {
 public:
-	enum {_MAX_BOUNCES = 7};
+	enum {_MAX_BOUNCES = 20, };
+	// adaptive termination
+	// with every intersection we can multiply end_contribution with an intensity
+	// (addContribution method) if it is below _MIN_CONTRIBUTION we terminate getRadiance
+	static const float _MIN_CONTRIBUTION = 0.05f;
 	GeometryGroup *scene;
 	std::vector<PointLightSource> lightSources;
 	float4 ambientLight;
@@ -35,12 +39,11 @@ public:
 	
 	virtual float4 getRadiance(const Ray &_ray)
 	{
-		//state.value<DepthStateKey>()++;
+		state.value<DepthStateKey>()++;
 
 		float4 col = float4::rep(0);
 
-		//if(state.value<DepthStateKey>() < _MAX_BOUNCES)
-		if(end_contribution > 0.05f)
+		if(end_contribution > _MIN_CONTRIBUTION || state.value<DepthStateKey>() < _MAX_BOUNCES)
 		{
 			Primitive::IntRet ret = scene->intersect(_ray, FLT_MAX);
 			if(ret.distance < FLT_MAX && ret.distance >= Primitive::INTEPS())
@@ -54,6 +57,7 @@ public:
 
 					for(std::vector<PointLightSource>::const_iterator it = lightSources.begin(); it != lightSources.end(); it++)
 					{
+						//experimental feature
 // 						float4 trans = getTotalTransparency(intPt, it->position, shader->transparency);
 
 						Vector lightD = it->position - intPt;
@@ -68,7 +72,7 @@ public:
 			}
 		}
 
-		//state.value<DepthStateKey>()--;
+		state.value<DepthStateKey>()--;
 
 		return col;
 	}

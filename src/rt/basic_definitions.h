@@ -26,6 +26,7 @@ struct Integrator : public RefCntBase
 {
 	StateObject state;
 	float end_contribution;
+
 	virtual void addContribution(const float4 c)
 	{
 		end_contribution = end_contribution * c[0];

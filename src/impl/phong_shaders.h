@@ -177,16 +177,17 @@ public:
 class RRPhongShader : public DefaultPhongShader
 {
 public:
-	float n1, n2;
+	// these paremeters determines environments 
+	// on the side of face normal (n1) and on the other side(n2)
+	float n1, n2; 
 	Point m_position;
-
 	
-	// _out == -ray.d
-	
+	// Details http://www.google.com/url?sa=t&source=web&cd=1&ved=0CBoQFjAA&url=http%3A%2F%2Fgraphics.stanford.edu%2Fcourses%2Fcs148-10-summer%2Fdocs%2F2006--degreve--reflection_refraction.pdf&rct=j&q=reflections%20and%20refractions%20in%20ray%20tracing%20stanford&ei=EeU9TdahF8HNswa-t7X0Bg&usg=AFQjCNGEsxpZBk_m6u_PiM1apLdNPVPajA&cad=rja
 	virtual float4 getIndirectRadiance(const Vector &_out, Integrator *_integrator) const
 	{
 		float4 color = float4::rep(0.0f);
 		Vector normal = getNormal();
+		
 		// if we hit the surface from inside we swap the n1,n2 and invert normal
 		bool front = true;
 		float nn2 = n2;
@@ -199,13 +200,17 @@ public:
 			nn = nn1/nn2;
 			front = false;
 		}
-		// compute refection coeficient
+		
+		// compute total reflection parameter
 		float cosI =  normal * (_out);
 		float sinT2 = nn * nn * (1.0f - cosI * cosI);
 		float4 reflCoef = float4::rep(0.0);
+		
+		// total internal reflection?
 		if(sinT2 > 1.0) 
 			reflCoef = float4::rep(1.0);
 		else {
+			// now we compute reflection intensity
 			float cosT = sqrt(1 - sinT2);
 			float NOrth = (nn1 * cosI - nn2 * cosT) / (nn1 * cosI + nn2 * cosT);
 			float Rpar =  (nn2 * cosI - nn1 * cosT) / (nn2 * cosI + nn1 * cosT);
@@ -216,19 +221,22 @@ public:
 		Ray newray;
 		newray.d = ~(- _out - 2 * cosI * normal);
 		newray.o = m_position + newray.d;
+		
+		// specify actual contribution for no infinite cycles
 		_integrator->addContribution(reflCoef);
+		// shoot reflectod ray
 		color = reflCoef * _integrator->getRadiance(newray);
 		_integrator->removeContribution(reflCoef);
+		
+		// if no total internal reflection, send refracted ray
 		if(sinT2 <= 1.0) {
 			float cosT = sqrt(1 - sinT2);
 			newray.d  = nn*(-_out) + (((nn * cosI) - cosT) * normal);
-			//we enter object 
-// 			if(front) {
-// 				_integrator->terminate = true;
-// 				_integrator->count = 6;
-// 			}
+			
+			// specify actual contribution for no infinite cycles
 			_integrator->addContribution(float4::rep(1.0f) - reflCoef);
-			color = color + transparency * ((float4::rep(1.0f) - reflCoef) * _integrator->getRadiance(newray));
+			//shoot refracted ray 
+			color = color + ((float4::rep(1.0f) - reflCoef) * _integrator->getRadiance(newray));
 			_integrator->removeContribution(float4::rep(1.0f) - reflCoef);
 		}
 		return color;
@@ -256,7 +264,7 @@ public:
 		// first we ask ancestor for the coeficient
 		float4 ret = TexturedPhongShader::getAmbientCoefficient();
 		
-		// then we maybe overide it
+		// then we maybe override it
 		if(amibientNoiseTexture.data() != NULL)
 			ret = amibientNoiseTexture->sample(m_texCoord);
 
