@@ -1,1 +1,2 @@
 obj/stdafx.o obj/stdafx.dep : src/stdafx.cpp src/stdafx.h
+stdafx.o obj/stdafx.dep : src/stdafx.cpp src/stdafx.h

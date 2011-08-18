@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
 <link rel="stylesheet" type="text/css" href="web_site/Midnight.css">
 <link rel="stylesheet" type="text/css" href="web_site/layout.css">
-<title>RC 2010 David Hrachový</title>
+<title>Rendering Competition 2010, Venus in the Night</title>
 </head>
 <body>
 <div id="container">
@@ -23,7 +23,7 @@
 	<div id="content">
 
 		<a href="web_site/result_final.png"><img src="web_site/result_final_thumb.png"></a>
-(click on the thumbnail to get the 
+(click on the thumbnail to get the original version 1280x960)
 <h1>
 		Algorithms implemented:
 		</h1>
@@ -31,17 +31,66 @@
 		Procedural Shading
 		</h2>
 		<p><b>Position:</b> clouds<br>
-		We implemented Perlin noise to mimic clouds. Perlin noise can be obtained by composition of several pseuo random functions with different frequncies. Noise class generates noise such that it first stores random values in an 2D arrayand we aske
+		We implemented Perlin noise to mimic clouds. Perlin noise can be obtained by composition of several pseudo random functions with different frequencies. Our noise class generates noise such that it first stores random values in an 2D array and then the pseudo random values ale obtained by averaging 4 neighbours (we do smoothing to be precise). The bigger is 2D array the higher frequencies we mimic.<br>
+		We created Noise Texture that has the same access methods as normal Texture. It additionally contains modified Perlin noise to generate nice islands in clouds.<br>
+		Perlin class saves several Noise classes and adds them together. But what we get are grayscale values and we want colourful clouds! <br>
+		In GIMP we estimate an equation for converting grayscale to white-blue:</p>
+		<p>
+		blue = 0.99 * gray<br>
+		red = gray<br>
+		green = gray / 2.0 + 0.5<br>
 		</p>
+		<p> References:
+		<ul>
+<li><a href="http://freespace.virgin.net/hugo.elias/models/m_perlin.htm">Perlin Noise</a></li>
+</ul>
+</p>
+		<p> Code links:
+<ul>
+<li>rt/noise_textures.h</li>
+<li>core/perlin.h</li>
+<li>core/array2.h</li>
+<li>impl/phong_shaders.h:253-288</li>
+</ul>
+</p>
 		<h2>
 Fractal Geometry
 		</h2>
+		<p><b>Position:</b> Landscape in the middle<br>
+		For generating a landscape we use mid-point displacement algorithm. Specifically we use Diamond-square algorithm. FractalLandscape class that generates triangles for a landscape works like this:<br>
+		<ul>
+		<li>initialize 2D array of heights that represent vertices and other member variables</li>
+		<li>generate texture coordinates for each vertex</li>
+		<li>recursively perturbate heights. The deeper we are the less we perturbate.</li>
+		<li>generate face normals and vertex normals</li>
+		<li>generate faces</li>
+		</ul>
+		Unfortunately the FractalLandscape is not so flexible and generates mountains only in positive Z direction.
+		</p>	
+		
+		<p> References:
+		<ul>
+<li><a href="http://www.cescg.org/CESCG97/marak/node3.html">http://www.cescg.org/CESCG97/marak/node3.html</a></li>
+<li><a href="http://www.taygeta.com/random/gaussian.html">http://www.cescg.org/CESCG97/marak/node3.html</a></li>
+<li>Wikipedia</li><li>Moderní počítačová grafika (2. vydání)
+Jiří Žára, Bedřich Beneš, Jiří Sochor, Petr Felkel <br>
+Computer Press, 2005, ISBN 80-251-0454-0</li>
+
+</ul>
+</p>		<p> Code links:
+<ul>
+<li>impl/fractallandscape.h</li>
+<li>impl/fractal_primitive.cpp</li>
+</ul>
+</p>
+
+
 		<h2>
 Bump Mapping
 		</h2>
 		<p><b>Position:</b> floor in the foreground and wall on the left<br>
-		Bump mapping is a technique for making surface appear rought. This is done with height map (bump texture) or normal map. I used bump map. Evything is implemented as a shader that is child of Texture Shader witd additional texture for performing perturbation. The perturbation is done by rotating face normal according to the bump texture - therefore we override getNormal method.<br>
-		First we set pu and pv vectors in object space. They lie in a plane defined by surface and cross product of these two vectors results in normal. To compute these vectors we linearly transform pu (1,0,0) and pv (0,1,0) form texture space (details in source code). Strongth of perturbation in x is defined as derivative of height map in x axis. We simply take difference between 2 heights in texture space.</p>
+		Bump mapping is a technique for making surface appear rough. This is done with height map (bump texture) or normal map. We used bump map. Everything is implemented as a shader that is child of Texture Shader with additional texture for performing perturbation. The perturbation is done by rotating face normal according to the bump texture - therefore we override getNormal method.<br>
+		First we set pu and pv vectors in object space. They lie in a plane defined by surface and cross product of these two vectors results in normal. To compute these vectors we linearly transform pu (1,0,0) and pv (0,1,0) from texture space (details in source code - method setPuPv). For linear transformation we built Matrix class with several operations. Strength of perturbation in X axis is defined as derivative of height map in X axis. To calculate the derivative we simply take difference between 2 heights in texture space.</p>
 <p>		perturbated_pu = pu + normal * derivative_in_x <br>
 		perturbated_normal = pu % pv<br>
 <p>	pu and pv don't have to be perpendicular after transformation. but in this implementation we assume they are </p>
@@ -53,18 +102,29 @@ Bump Mapping
 Jiří Žára, Bedřich Beneš, Jiří Sochor, Petr Felkel <br>
 Computer Press, 2005, ISBN 80-251-0454-0</li>
 </ul>
+</p>		<p> Code links:
+<ul>
+<li>impl/phong_shaders.h:119-175</li>
+<li>core/algebra.h:324-406</li>
+</ul>
 </p>
 		<h2>
 			Reflective and Refractive Transparency
 		</h2>
 		<p><b>Position:</b> Sphere on the right<br>
-Refraction is the change in direction of a wave caused by a change of speed. Light travels in different environments with different speed. Refraction is described by Snell's law that shows relation between direction of refracted ray and incoming ray. Snell's law is implemented as well as ray intensities - not all the light is being refracted but some part is reflected. All code is in RRPhongShader (RR stands for refraction and reflection). Since we shoot every time 2 rays again (except for total internal reflection), we could accidently end up in infinite cycle. Thus before continuing shooting we store intensity of the shooted ray in Integrator. If the intensities in the integrator drop below certain value, integrator will not compute indirect radiance.
+Refraction is the change in direction of a wave caused by a change of speed. Light travels in different environments with different speed. Refraction is described by Snell's law that shows relation between direction of refracted ray and incoming ray. Snell's law is implemented as well as ray intensities - not all the light is being refracted but some part is reflected. All code is in RRPhongShader (RR stands for refraction and reflection) - getIndirectRadiance. <br> Since we shoot every time 2 rays again (except for total internal reflection), we could accidentaly end up in infinite cycle. Thus before continuing shooting we store intensity of the shot ray in Integrator. If the intensities in the integrator drop below certain value, Integrator will return black color.
+<p>Note: just in case we use termination based on number of recursive shooting as before. But the limit is higher.</p>
 
 		</p>
 <p> References:
 <ul>
 <li><a href="http://www.google.com/url?sa=t&source=web&cd=5&ved=0CEoQFjAE&url=http%3A%2F%2Fgraphics.stanford.edu%2Fcourses%2Fcs148-10-summer%2Fdocs%2F2006--degreve--reflection_refraction.pdf&rct=j&q=reflection%20and%20refraction%20fresnel%20ray%20tracing&ei=exQjTZjYMs6LswaSgaH6DQ&usg=AFQjCNGEsxpZBk_m6u_PiM1apLdNPVPajA&cad=rja">Reflections and Refractions in Ray Tracing, 2004</a></li>
 <li><a href="http://www.google.com/url?sa=t&source=web&cd=1&sqi=2&ved=0CBwQFjAA&url=http%3A%2F%2Fwww.flipcode.com%2Farchives%2Freflection_transmission.pdf&ei=qfciTf72OMqRswbcwuTwDA&usg=AFQjCNFFYJUTfKkqeBFFSuSJJt1yx-NhmA">Reflections and Refractions in Ray Tracing, 2006</a></li>
+</ul>
+</p></p>		<p> Code links:
+<ul>
+<li>impl/phong_shaders.h:177-250</li>
+<li>impl/integrator.h:29,46</li>
 </ul>
 </p>
 <hr>
@@ -75,6 +135,9 @@ Refraction is the change in direction of a wave caused by a change of speed. Lig
 <ul>
 <li><a href="http://artist-3d.com/free_3d_models/dnm/model_disp.php?uid=592">Venus statue</a></li>
 <li><a href="http://www.accustudio.com/index.php?option=com_phocagallery&view=category&id=42&Itemid=0">Landscape textil texture</a> - <i>004-tissu</i> texture</li>
+
+<li><a href="http://www.maxdesign.com.au/articles/css-layouts/one-fixed/">CSS layout</a></li>
+<li><a href="http://www.w3.org/StyleSheets/Core/">additional CSS</a></li>
 </ul>
 		</p>
 	</div>
@@ -83,12 +146,5 @@ Refraction is the change in direction of a wave caused by a change of speed. Lig
 	</div>
 </div>
 
-<!--
-http://www.maxdesign.com.au/articles/css-layouts/one-fixed/
-http://www.w3.org/StyleSheets/Core/
-http://artist-3d.com/free_3d_models/dnm/model_disp.php?uid=592
-textil
-http://www.accustudio.com/index.php?option=com_phocagallery&view=category&id=42&Itemid=0
-    -->
 </body>
 </html>

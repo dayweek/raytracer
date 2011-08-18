@@ -5,3 +5,10 @@ obj/rt/geometry_group.o obj/rt/geometry_group.dep : src/rt/geometry_group.cpp sr
  src/rt/../rt/../core/defs.h src/rt/../rt/../core/memory.h \
  src/rt/../rt/../core/state.h src/rt/../rt/bvh.h \
  src/rt/../rt/basic_definitions.h src/rt/shading_basics.h
+geometry_group.o obj/rt/geometry_group.dep : src/rt/geometry_group.cpp src/stdafx.h \
+ src/rt/geometry_group.h src/rt/../rt/basic_definitions.h \
+ src/rt/../rt/../core/defs.h src/rt/../rt/../core/bbox.h \
+ src/rt/../rt/../core/ray.h src/rt/../rt/../core/algebra.h \
+ src/rt/../rt/../core/defs.h src/rt/../rt/../core/memory.h \
+ src/rt/../rt/../core/state.h src/rt/../rt/bvh.h \
+ src/rt/../rt/basic_definitions.h src/rt/shading_basics.h
